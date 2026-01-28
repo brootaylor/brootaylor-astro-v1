@@ -1,0 +1,12 @@
+# Directories to ignore
+**/node_modules/**
+dist/
+.astro/
+.vscode
+
+# Files to ignore
+.DS_Store
+.env
+
+# Local Netlify folder
+.netlify

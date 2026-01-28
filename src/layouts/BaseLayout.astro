@@ -1,0 +1,36 @@
+---
+import type { MarkdownLayoutProps } from 'astro';
+
+type Props = MarkdownLayoutProps<{
+  // Define frontmatter props here
+  title: string;
+}>;
+
+// Now, `frontmatter`, and other Markdown layout properties
+// are accessible with type safety
+const { frontmatter } = Astro.props;
+---
+<html lang="en-gb">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{frontmatter.title}</title>
+  </head>
+  <body>
+    <h1>{frontmatter.title}</h1>
+    <article>
+      <slot />
+    </article>
+  </body>
+  <style>
+    html {
+      font-family: system-ui, sans-serif;
+      font-weight: 300;
+      color: hsl(0, 0%, 0%);
+      padding: 2em;
+    }
+    h1 {
+      font-weight: 600;
+    }
+  </style>
+</html>

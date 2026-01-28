@@ -1,0 +1,26 @@
+{
+  "name": "brootaylor-astro-v1",
+  "version": "1.0.0",
+  "description": "A version of my website using the Astro web framework.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brootaylor/brootaylor-astro-v1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/brootaylor/brootaylor-astro-v1/issues"
+  },
+  "homepage": "https://github.com/brootaylor/brootaylor-astro-v1#readme",
+  "dependencies": {
+    "astro": "^5.16.15"
+  }
+}
