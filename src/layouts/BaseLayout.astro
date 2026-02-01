@@ -1,53 +1,33 @@
 ---
-import type { MarkdownLayoutProps } from 'astro';
+import Link from "../components/Link.astro";
 
-type Props = MarkdownLayoutProps<{
-  // Define frontmatter props here
-  title: string;
-}>;
+import "../styles/main.css";
 
-// Now, `frontmatter`, and other Markdown layout properties
-// are accessible with type safety
-const { frontmatter } = Astro.props;
+const { title = "Broo's Website" } = Astro.props;
 ---
+
+<!doctype html>
 <html lang="en-gb">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{frontmatter.title}</title>
+    <title>{title}</title>
   </head>
   <body>
-    <h1>{frontmatter.title}</h1>
-    <article>
-      <slot />
-    </article>
+    <header>
+      <nav>
+        <Link href="/">Home</Link>
+        <Link href="/about">About</Link>
+      </nav>
+    </header>
+    <main>
+      <article>
+        <slot />
+      </article>
+    </main>
+    <footer>
+      <hr>
+      <p>© {new Date().getFullYear()} Bruce Taylor.</p>
+    </footer>
   </body>
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    html {
-      font-family: system-ui, sans-serif;
-      font-weight: 300;
-      color: hsl(0, 0%, 0%);
-      padding: 4em;
-      width: 80ch;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    h1 {
-      font-weight: 900;
-      text-wrap: balance;
-    }
-
-    article {
-      text-wrap: pretty;
-    }
-  </style>
 </html>

@@ -1,0 +1,13 @@
+---
+const { href } = Astro.props;
+---
+
+<a href={href}>
+  <slot />
+</a>
+
+<style>
+  a:not(:last-child)::after {
+    content: ' | ';
+  }
+</style>
