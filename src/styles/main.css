@@ -26,6 +26,14 @@ article {
 }
 
 a {
-  color: blue;
+  color: hsl(240, 100%, 50%);
   text-decoration: underline;
+}
+
+hr {
+  border: 0;
+  background-color: hsl(0, 0%, 90%);
+  margin-top: 2rem;
+  margin-inline: 0 auto;
+  height: 0.1rem;
 }

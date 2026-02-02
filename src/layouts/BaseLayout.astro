@@ -1,5 +1,6 @@
 ---
-import Link from "../components/Link.astro";
+import Message from "../components/Message.astro";
+import Navigation from "../components/Navigation.astro";
 
 import "../styles/main.css";
 
@@ -15,10 +16,8 @@ const { title = "Broo's Website" } = Astro.props;
   </head>
   <body>
     <header>
-      <nav>
-        <Link href="/">Home</Link>
-        <Link href="/about">About</Link>
-      </nav>
+      <Message />
+      <Navigation />
     </header>
     <main>
       <article>
@@ -27,7 +26,7 @@ const { title = "Broo's Website" } = Astro.props;
     </main>
     <footer>
       <hr>
-      <p>© {new Date().getFullYear()} Bruce Taylor.</p>
+      <p>© Bruce Taylor {new Date().getFullYear()}. All rights reserved.</p>
     </footer>
   </body>
 </html>
