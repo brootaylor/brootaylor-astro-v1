@@ -6,4 +6,4 @@ More than likely this will serve up specific content that I'd like to render on 
 
 Or... I may make this into an experimental playground area for all sorts of web development ideas, techniques, features, etc.
 
-I guess we'll see... 🤔
+I guess we'll see. 🤔
