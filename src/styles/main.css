@@ -17,7 +17,7 @@ html {
   font-weight: 300;
   color: var(--color-text);
   line-height: 1.5;
-  padding: 4em;
+  padding: clamp(1em, 4vw, 4em);
   max-width: 80ch;
 }
 
