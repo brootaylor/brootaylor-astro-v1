@@ -46,7 +46,9 @@ html {
   font-weight: 300;
   color: var(--color-text);
   line-height: 1.5;
-  padding: var(--fluid-space-s-2xl);
+  scroll-behavior: smooth;
+  padding-inline: var(--fluid-space-s-2xl);
+  padding-block: var(--fluid-space-s-l);
   max-width: 80ch;
 }
 
