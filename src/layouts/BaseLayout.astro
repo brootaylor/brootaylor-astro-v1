@@ -15,16 +15,16 @@ const { title = "Broo's Website" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <header>
+    <header class="flow">
       <Message />
       <Navigation />
     </header>
     <main>
-      <article>
+      <article class="flow">
         <slot />
       </article>
     </main>
-    <footer>
+    <footer class="flow">
       <hr>
       <p>© Bruce Taylor {new Date().getFullYear()}. All rights reserved.</p>
     </footer>

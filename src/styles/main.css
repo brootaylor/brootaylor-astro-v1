@@ -1,3 +1,11 @@
+:root {
+  --color-text: hsl(0, 0%, 0%);
+  --color-link: hsl(240, 100%, 50%);
+  --color-hr: hsl(0, 0%, 90%);
+  --font-family: system-ui, sans-serif;
+  --flow-space: 1em;
+}
+
 *,
 *::before,
 *::after {
@@ -5,14 +13,20 @@
 }
 
 html {
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 300;
-  color: hsl(0, 0%, 0%);
+  color: var(--color-text);
+  line-height: 1.5;
   padding: 4em;
   max-width: 80ch;
 }
 
-body {
+body,
+h1,
+h2,
+h3,
+h4,
+p {
   margin: 0;
 }
 
@@ -21,19 +35,23 @@ h1 {
   text-wrap: balance;
 }
 
-article {
-  text-wrap: pretty;
-}
-
 a {
-  color: hsl(240, 100%, 50%);
+  color: var(--color-link);
   text-decoration: underline;
 }
 
 hr {
   border: 0;
-  background-color: hsl(0, 0%, 90%);
+  background-color: var(--color-hr);
   margin-top: 2rem;
   margin-inline: 0 auto;
   height: 0.1rem;
+}
+
+article {
+  text-wrap: pretty;
+}
+
+.flow > * + * {
+  margin-top: var(--flow-space);
 }
