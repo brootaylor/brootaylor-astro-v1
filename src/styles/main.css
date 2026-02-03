@@ -1,8 +1,10 @@
 :root {
+  color-scheme: dark light; /* dark mode support for user agents that support it (https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) */
+
   --color-text: hsl(0, 0%, 0%);
   --color-link: hsl(240, 100%, 50%);
   --color-hr: hsl(0, 0%, 90%);
-  --font-family: system-ui, sans-serif;
+  --ff-base: system-ui, sans-serif;
 
   /* Fluid Type Scale */
   /* Step -2: 12.5px → 12.8px */
@@ -35,30 +37,123 @@
   --fluid-space-s-2xl: clamp(1.125rem, -0.4602rem + 7.0455vw, 5rem);
 }
 
+
+/* ----- REST RULES ----- */
+
+/* Box sizing rules */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html {
-  font-family: var(--font-family);
-  font-weight: 300;
-  color: var(--color-text);
-  line-height: 1.5;
-  scroll-behavior: smooth;
-  padding-inline: var(--fluid-space-s-2xl);
-  padding-block: var(--fluid-space-s-l);
-  max-width: 80ch;
+/* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
 }
 
-body,
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+html {
+  hanging-punctuation: first last; /* Safari only at the moment --> https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation */
+}
+
+/* Set core root defaults */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove all animations and transitions for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+   scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* If no preference for reduced motion, enable smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  :has(:target) {
+    scroll-behavior: smooth;
+    scroll-padding-top: 3rem;
+  }
+}
+
+
+/* ----- CUSTOM RULES ----- */
+
+html {
+  max-width: 50rem;
+}
+
 h1,
 h2,
 h3,
 h4,
 p {
   margin: 0;
+}
+
+p,
+li {
+  font-size: var(--fluid-type-0);
+  text-wrap: pretty;
+}
+
+body {
+  font-family: var(--ff-base);
+  font-weight: 300;
+  color: var(--color-text);
+  line-height: 1.5;
+  padding-inline: var(--fluid-space-s-2xl);
+  padding-block: var(--fluid-space-s-l);
 }
 
 h1 {
@@ -88,11 +183,10 @@ hr {
   height: 0.1rem;
 }
 
-article {
-  font-size: var(--fluid-type-0);
-  text-wrap: pretty;
-}
-
 .flow > * + * {
   margin-top: var(--fluid-space-xs-s);
+}
+
+.copyright {
+  font-size: var(--fluid-type--1);
 }
