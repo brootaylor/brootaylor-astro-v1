@@ -3,14 +3,26 @@ import Link from "./Link.astro";
 ---
 
 <nav>
-  <Link href="/">Home</Link>
-  <Link href="/about">About</Link>
+  <ul role="list">
+    <li>
+      <Link href="/">Home</Link>
+    </li>
+    <li>
+      <Link href="/about">About</Link>
+    </li>
+  </ul>
 </nav>
 
 <style>
   nav {
-    display: flex;
-    gap: 1em;
     margin-bottom: 1em;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1em;
+    padding: 0;
+    margin: 0;
   }
 </style>

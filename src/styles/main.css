@@ -143,12 +143,12 @@ p {
 
 p,
 li {
-  font-size: var(--fluid-type-0);
   text-wrap: pretty;
 }
 
 body {
   font-family: var(--ff-base);
+  font-size: var(--fluid-type-0);
   font-weight: 300;
   color: var(--color-text);
   line-height: 1.5;
