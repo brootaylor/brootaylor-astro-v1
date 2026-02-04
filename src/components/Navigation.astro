@@ -2,7 +2,11 @@
 import Link from "./Link.astro";
 ---
 
-<nav>
+<button aria-controls="primary-nav" aria-expanded="false" aria-label="Menu">
+  <span>Menu</span>
+</button>
+
+<nav id="primary-nav">
   <ul role="list">
     <li>
       <Link href="/">Home</Link>
@@ -18,11 +22,47 @@ import Link from "./Link.astro";
     margin-bottom: 1em;
   }
 
+  button[aria-controls="primary-nav"] {
+    display: none;
+  }
+
+  /* Still to sort out the smaller screen menu & navigation rules */
+  /* @media (width < 750px) {
+    button {
+      display: block;
+      position: absolute;
+      z-index: 10;
+      right: 0;
+    }
+    nav {
+      display: none;
+    }
+
+    [aria-controls="primary-nav"][aria-expanded="true"] + nav {
+      display: block;
+      position: absolute;
+      height: 100dvh;
+      inset: 0;
+      z-index: 1;
+      background-color: hsl(48, 6%, 83%);
+    }
+  } */
+
   ul {
     display: flex;
     flex-wrap: nowrap;
     gap: 1em;
-    padding: 0;
-    margin: 0;
   }
 </style>
+
+<script>
+  const navToggle = document.querySelector('[aria-controls="primary-nav"]');
+  navToggle.addEventListener("click", () => {
+    const navOpened = navToggle.getAttribute("aria-expanded");
+    if (navOpened === "false") {
+      navToggle.setAttribute("aria-expanded", "true");
+    } else {
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+</script>

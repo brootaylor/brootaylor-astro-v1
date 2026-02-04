@@ -1,7 +1,7 @@
 :root {
   color-scheme: dark light; /* dark mode support for user agents that support it (https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) */
 
-  --color-text: hsl(0, 0%, 0%);
+  --color-body: hsl(0, 0%, 0%);
   --color-link: hsl(240, 100%, 50%);
   --color-hr: hsl(0, 0%, 90%);
   --ff-base: system-ui, sans-serif;
@@ -62,9 +62,10 @@ dd {
 }
 
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-ul[role="list"],
-ol[role="list"] {
+[role="list"] {
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -89,10 +90,9 @@ a:not([class]) {
 }
 
 /* Make images easier to work with */
-img,
-picture {
+img {
+  display: block;
   max-width: 100%;
-  height: auto;
 }
 
 /* Inherit fonts for inputs and buttons */
@@ -150,24 +150,25 @@ body {
   font-family: var(--ff-base);
   font-size: var(--fluid-type-0);
   font-weight: 300;
-  color: var(--color-text);
+  color: var(--color-body);
   line-height: 1.5;
   padding-inline: var(--fluid-space-s-2xl);
   padding-block: var(--fluid-space-s-l);
 }
 
+h1, h2 {
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
 h1 {
   font-size: var(--fluid-type-3);
   font-weight: 900;
-  text-wrap: balance;
-  line-height: 1.1;
 }
 
 h2 {
   font-size: var(--fluid-type-1);
   font-weight: 700;
-  text-wrap: balance;
-  line-height: 1.1;
 }
 
 a {
@@ -183,10 +184,21 @@ hr {
   height: 0.1rem;
 }
 
-.flow > * + * {
-  margin-top: var(--fluid-space-xs-s);
+
+/* ----- UTILITY RULES ----- */
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
 }
 
-.copyright {
-  font-size: var(--fluid-type--1);
+.flow > * + * {
+  margin-top: var(--fluid-space-xs-s);
 }

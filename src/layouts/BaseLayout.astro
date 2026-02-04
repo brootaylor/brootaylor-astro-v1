@@ -1,6 +1,6 @@
 ---
-import Message from "../components/Message.astro";
-import Navigation from "../components/Navigation.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 
 import "../styles/main.css";
 
@@ -15,18 +15,12 @@ const { title = "Broo's Website" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <header class="flow">
-      <Message />
-      <Navigation />
-    </header>
+    <Header />
     <main>
       <article class="flow">
         <slot />
       </article>
     </main>
-    <footer class="flow">
-      <hr>
-      <p class="copyright">© {new Date().getFullYear()} Bruce Taylor. All rights reserved.</p>
-    </footer>
+    <Footer />
   </body>
 </html>
