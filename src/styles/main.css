@@ -1,5 +1,5 @@
 :root {
-  color-scheme: dark light; /* dark mode support for user agents that support it (https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) */
+  color-scheme: normal; /* color-scheme support for user agents that support it (https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) */
 
   --color-body: hsl(0, 0%, 0%);
   --color-link: hsl(240, 100%, 50%);
