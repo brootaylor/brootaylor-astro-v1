@@ -128,11 +128,6 @@ select {
 
 
 /* ----- CUSTOM RULES ----- */
-
-html {
-  max-width: 50rem;
-}
-
 h1,
 h2,
 h3,
