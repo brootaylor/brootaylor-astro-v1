@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Import the `getCollection` function from `astro:content` to fetch the blog posts collection.
+import { getCollection } from 'astro:content';
+
+// Get all blog entries that are not drafts
+const publishedBlogEntries = await getCollection('posts', ({ data }) => {
+  return data.draft !== true;
+});
+
+// Sort the blog entries by date in descending order (newest first)
+const sortedPosts = publishedBlogEntries.sort((a, b) => {
+  return b.data.date.valueOf() - a.data.date.valueOf();
+});
+
+const title = "Posts";
+---
+
+<BaseLayout title={title}>
+  <p>Here are some posts.</p>
+  <ul class="flow">
+    {sortedPosts.map((post) => (
+      <li><a href={`/posts/${post.slug}`}>{post.data.title}</a></li>
+    ))}
+  </ul>
+</BaseLayout>
