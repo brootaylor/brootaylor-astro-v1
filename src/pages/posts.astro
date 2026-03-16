@@ -21,7 +21,7 @@ const title = "Posts";
   <p>Here are some posts.</p>
   <ul class="flow">
     {sortedPosts.map((post) => (
-      <li><a href={`/posts/${post.slug}`}>{post.data.title}</a></li>
+      <li><a href={`/posts/${post.id}`}>{post.data.title}</a></li>
     ))}
   </ul>
 </BaseLayout>
