@@ -1,5 +1,7 @@
 ---
+// This page is responsible for rendering individual blog posts based on their slug. It uses `getStaticPaths` to fetch the posts collection and generate paths for each post, and then renders the content of the post using a layout component.
 import PostsLayout from "../../layouts/PostsLayout.astro";
+// Importing a utility function to convert post IDs to slugs for URL generation.
 import { toSlug } from "../../utils/slug";
 
 // Import `getCollection` and `render` from `astro:content`
