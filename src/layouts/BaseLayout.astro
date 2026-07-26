@@ -4,7 +4,7 @@ import Footer from "../components/Footer.astro";
 
 import "../styles/main.css";
 
-const { title = "Broo's Website" } = Astro.props;
+const { title = "Broo's Playground Website" } = Astro.props;
 ---
 
 <!doctype html>
@@ -25,6 +25,8 @@ const { title = "Broo's Website" } = Astro.props;
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 		<link rel="icon" href="/favicon.ico">
+    {/* Feed autodiscovery — how a reader finds /rss.xml from any page on the site. */}
+    <link rel="alternate" type="application/rss+xml" title="Broo's Playground Website" href="/rss.xml">
     <title>{title}</title>
   </head>
   <body>

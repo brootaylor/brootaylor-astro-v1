@@ -2,21 +2,13 @@
 // This is the main page for the blog posts. It fetches all the published blog entries from the `posts` collection, checks their draft status, sorts them by date, and displays them in a list with links to their individual pages.
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-// Import the `getCollection` function from `astro:content` to fetch the blog posts collection.
-import { getCollection } from 'astro:content';
-
 // Date helpers, so the listing and the post pages format dates identically.
 import { formatDate, toDateTime } from '../../utils/date';
 
-// Get all blog entries that are not drafts
-const publishedBlogEntries = await getCollection('posts', ({ data }) => {
-  return data.draft !== true;
-});
+// Drafts filtered out and sorted newest first. Shared with the RSS feed so the two can't drift.
+import { getPublishedPosts } from '../../utils/posts';
 
-// Sort the blog entries by date in descending order (newest first)
-const sortedPosts = publishedBlogEntries.sort((a, b) => {
-  return b.data.date.valueOf() - a.data.date.valueOf();
-});
+const sortedPosts = await getPublishedPosts();
 
 //
 const title = "Posts";
