@@ -34,7 +34,7 @@ export async function GET(context: APIContext) {
   );
 
   return rss({
-    title: "Broo's Website",
+    title: "Broo's Playground Website",
     description: 'An experimental/playground website of sorts using the Astro web framework.',
     // `context.site` comes from `site` in astro.config.mjs, which is what makes the relative
     // `link` values above resolve to absolute URLs.
