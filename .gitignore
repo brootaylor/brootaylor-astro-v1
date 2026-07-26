@@ -20,9 +20,6 @@ pnpm-debug.log*
 # IDE and editor files
 .vscode/
 
-# Claude Code
-CLAUDE.md
-
 # macOS-specific files
 .DS_Store
 
