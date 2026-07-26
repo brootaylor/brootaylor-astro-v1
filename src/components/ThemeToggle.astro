@@ -66,28 +66,40 @@ const options = [
 </style>
 
 <script>
+  // The key used in localStorage to store the user's theme preference
   const storageKey = 'theme';
+  // Select the theme toggle fieldset, which contains the radio buttons for theme selection
   const toggle = document.querySelector('.theme-toggle');
 
+  // If the toggle exists, we can assume scripting is available and proceed to set up the theme toggle functionality
   if (toggle instanceof HTMLFieldSetElement) {
-    // Now we know scripting is available
-    toggle.hidden = false;
+    // Now we know scripting is available...
+    toggle.hidden = false; // Reveal the theme toggle control
 
+    // Retrieve the stored theme preference from localStorage
     const stored = localStorage.getItem(storageKey);
+
+    // If a stored preference exists and is either 'light' or 'dark', we set the corresponding radio button to checked
     if (stored === 'light' || stored === 'dark') {
+      // Set the checked state of the radio buttons based on the stored preference
       for (const radio of toggle.querySelectorAll('input[name="theme"]')) {
+        // If the radio button is an input element, we check if its value matches the stored preference and set it to checked accordingly
         if (radio instanceof HTMLInputElement) radio.checked = radio.value === stored;
       }
     }
 
+    // Add an event listener to the toggle fieldset to handle changes in the selected theme
     toggle.addEventListener('change', (event) => {
+      // Ensure the event target is an input element before proceeding
       if (!(event.target instanceof HTMLInputElement)) return;
 
+      // If the selected value is 'system', we remove the `data-theme` attribute from the <html> element, allowing the OS preference to take effect. Otherwise, we set the `data-theme` attribute to the selected value and store it in localStorage for future visits.
       if (event.target.value === 'system') {
         // Removing the attribute hands control back to `prefers-color-scheme`
         delete document.documentElement.dataset.theme;
         localStorage.removeItem(storageKey);
       } else {
+        // Setting the attribute overrides `prefers-color-scheme` and applies the selected theme
         document.documentElement.dataset.theme = event.target.value;
         localStorage.setItem(storageKey, event.target.value);
       }
