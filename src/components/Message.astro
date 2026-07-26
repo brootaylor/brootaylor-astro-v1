@@ -6,14 +6,15 @@ const message = "This website is an experimental space and very much a work in p
 </aside>
 
 <style>
+  /* Scoped rather than global tokens — these amber values are specific to this banner */
   aside {
-    background-color: hsl(48, 100%, 95%);
-    border: 1px solid hsl(45, 100%, 85%);
+    background-color: light-dark(hsl(48, 100%, 95%), hsl(48, 30%, 12%));
+    border: 1px solid light-dark(hsl(45, 100%, 85%), hsl(45, 35%, 26%));
     padding: 1em;
     border-radius: 4px;
   }
 
   p {
-    color: hsl(54, 100%, 20%);
+    color: light-dark(hsl(54, 100%, 20%), hsl(48, 55%, 78%));
   }
 </style>

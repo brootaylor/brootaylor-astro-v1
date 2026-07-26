@@ -1,9 +1,12 @@
 :root {
-  color-scheme: normal; /* color-scheme support for user agents that support it (https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) */
+  color-scheme: light dark; /* color-scheme support for user agents that support it (https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) */
 
-  --color-body: hsl(0, 0%, 0%);
-  --color-link: hsl(240, 100%, 50%);
-  --color-hr: hsl(0, 0%, 90%);
+  /* Colour tokens are light/dark pairs via `light-dark()`, which depends on the `color-scheme` above being declared */
+  /* Neither end of the scale is pure black/white — slightly off values avoid halation on OLED screens */
+  --color-bg: light-dark(hsl(0, 0%, 100%), hsl(0, 0%, 9%));
+  --color-body: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 88%));
+  --color-link: light-dark(hsl(240, 100%, 50%), hsl(213, 100%, 74%));
+  --color-hr: light-dark(hsl(0, 0%, 90%), hsl(0, 0%, 22%));
   --ff-base: system-ui, sans-serif;
 
   /* Fluid Type Scale */
@@ -145,6 +148,7 @@ body {
   font-family: var(--ff-base);
   font-size: var(--fluid-type-0);
   font-weight: 300;
+  background-color: var(--color-bg);
   color: var(--color-body);
   line-height: 1.5;
   padding-inline: var(--fluid-space-s-2xl);
