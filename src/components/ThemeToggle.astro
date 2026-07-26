@@ -1,0 +1,96 @@
+---
+// Theme control. Writing `data-theme` to <html> overrides the `color-scheme` declared in main.css,
+// which is what every `light-dark()` token keys off — so nothing else needs to know this exists.
+// No stored choice means no attribute, and the OS preference applies with no JS involved at all.
+const options = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+];
+---
+
+{/* Hidden until the script below reveals it, so a no-JS visitor isn't shown a control that can't work */}
+<fieldset class="theme-toggle" hidden>
+  <legend class="visually-hidden">Choose a colour theme</legend>
+  <ul role="list">
+    {options.map(({ value, label }) => (
+      <li>
+        <input type="radio" name="theme" id={`theme-${value}`} value={value} checked={value === 'system'} />
+        <label for={`theme-${value}`}>{label}</label>
+      </li>
+    ))}
+  </ul>
+</fieldset>
+
+<style>
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* `[role="list"]` in main.css already strips the margin, padding and marker */
+  ul {
+    display: flex;
+    gap: 0.25em;
+  }
+
+  /* Hidden visually but still focusable and still announced — the label is the visible control */
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  label {
+    display: block;
+    padding: 0.15em 0.6em;
+    border: 1px solid var(--color-hr);
+    border-radius: 4px;
+    font-size: var(--fluid-type--1);
+    cursor: pointer;
+  }
+
+  input:checked + label {
+    background-color: var(--color-body);
+    border-color: var(--color-body);
+    color: var(--color-bg);
+  }
+
+  /* The input carries focus but is invisible, so the outline has to be drawn on the label */
+  input:focus-visible + label {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  const storageKey = 'theme';
+  const toggle = document.querySelector('.theme-toggle');
+
+  if (toggle instanceof HTMLFieldSetElement) {
+    // Now we know scripting is available
+    toggle.hidden = false;
+
+    const stored = localStorage.getItem(storageKey);
+    if (stored === 'light' || stored === 'dark') {
+      for (const radio of toggle.querySelectorAll('input[name="theme"]')) {
+        if (radio instanceof HTMLInputElement) radio.checked = radio.value === stored;
+      }
+    }
+
+    toggle.addEventListener('change', (event) => {
+      if (!(event.target instanceof HTMLInputElement)) return;
+
+      if (event.target.value === 'system') {
+        // Removing the attribute hands control back to `prefers-color-scheme`
+        delete document.documentElement.dataset.theme;
+        localStorage.removeItem(storageKey);
+      } else {
+        document.documentElement.dataset.theme = event.target.value;
+        localStorage.setItem(storageKey, event.target.value);
+      }
+    });
+  }
+</script>

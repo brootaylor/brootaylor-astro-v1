@@ -1,9 +1,27 @@
 ---
 import Message from './Message.astro';
 import Navigation from './Navigation.astro';
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="flow">
     <Message />
-    <Navigation />
+    <div class="nav-wrapper">
+      <Navigation />
+      <ThemeToggle />
+    </div>
 </header>
+
+<style>
+  /* Holds the spacing that `nav` used to carry itself, so the two children align on their centres.
+     `space-between` puts the theme toggle hard right beside the nav, and — because a flex line
+     holding a single item falls back to flex-start — left-aligns it once it wraps onto its own row. */
+  .nav-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    margin-bottom: 1em;
+  }
+</style>

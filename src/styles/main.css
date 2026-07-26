@@ -40,6 +40,16 @@
   --fluid-space-s-2xl: clamp(1.125rem, -0.4602rem + 7.0455vw, 5rem);
 }
 
+/* A stored theme choice overrides the OS preference. No `data-theme` means the `light dark` above
+   stands and `prefers-color-scheme` applies natively — no JS needed to react to an OS change. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 
 /* ----- REST RULES ----- */
 

@@ -13,6 +13,16 @@ const { title = "Broo's Website" } = Astro.props;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
+    {/* Runs before the render-blocking stylesheet so a stored choice never flashes the wrong scheme.
+        IIFE-wrapped because `is:inline` scripts share the global scope. */}
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.dataset.theme = stored;
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 		<link rel="icon" href="/favicon.ico">
     <title>{title}</title>
