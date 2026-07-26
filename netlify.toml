@@ -18,6 +18,16 @@
   targetPort = 4321
   framework = "#custom"
 
+# @astrojs/sitemap always emits a sitemap *index* (`sitemap-index.xml`) plus numbered chunks,
+# and the filename isn't configurable. Nothing in the sitemaps.org spec requires /sitemap.xml —
+# `robots.txt` is what points Google and Bing at the real file — but it's a strong enough
+# convention that crawlers and audit tools probe it blindly, and would otherwise get a 404.
+# 301 rather than a rewrite, so the index keeps a single canonical location.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]

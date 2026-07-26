@@ -4,12 +4,16 @@ import PostsLayout from "../../layouts/PostsLayout.astro";
 // Importing a utility function to convert post IDs to slugs for URL generation.
 import { toSlug } from "../../utils/slug";
 
-// Import `getCollection` and `render` from `astro:content`
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
+
+// The same published-posts helper the listing and the feed use. Drafts get no page built at all,
+// so a draft can't be listed, syndicated, indexed or reached by guessing its URL — one rule
+// everywhere rather than three surfaces each remembering to filter. Preview drafts with `npm run dev`.
+import { getPublishedPosts } from "../../utils/posts";
 
 // `getStaticPaths` is now an async function that fetches the posts collection and returns an array of paths with props.
 export async function getStaticPaths() {
-  const posts = await getCollection("posts");
+  const posts = await getPublishedPosts();
   return posts.map((post) => ({
     params: { slug: toSlug(post.id) }, // Using the `toSlug` function to convert the post ID to a slug for the URL
     props: { post },
