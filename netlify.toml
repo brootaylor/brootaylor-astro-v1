@@ -1,0 +1,41 @@
+# Netlify configuration.
+#
+# Note: once this file is deployed, the [build] block below OVERRIDES whatever is set
+# in the Netlify UI. The UI settings become inert, so change build config here from now on.
+#
+# The Node version deliberately lives in `.nvmrc` (24.15.0) and is NOT repeated here.
+# Netlify reads `.nvmrc` natively, and a NODE_VERSION set in this file would take
+# precedence over it — two sources of truth that could silently drift apart.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Used by `npx netlify dev`, which proxies Astro's dev server so redirects, headers and
+# env vars behave locally the way they will in production.
+[dev]
+  command = "npm run dev"
+  targetPort = 4321
+  framework = "#custom"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Stop browsers second-guessing declared MIME types
+    X-Content-Type-Options = "nosniff"
+
+    # Send the origin cross-site, the full URL same-site, and nothing when downgrading to HTTP
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Nothing here needs these APIs, so refuse them outright
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+
+    # Superseded by `frame-ancestors` below in modern browsers; kept for older ones
+    X-Frame-Options = "DENY"
+
+    # `'unsafe-inline'` is unavoidable here, not laziness: Astro inlines both the theme
+    # scripts and the stylesheet into the HTML, and this build ships zero external JS or CSS.
+    # Hashes would break on every edit to the theme code; nonces need a server, which static
+    # hosting doesn't provide. The remaining directives are still worth having — they block
+    # framing, base-tag hijacking, form exfiltration and plugin content.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
