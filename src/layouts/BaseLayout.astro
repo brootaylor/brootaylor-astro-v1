@@ -2,9 +2,21 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
+import { siteName, siteDescription, siteLocale } from "../site";
+
 import "../styles/main.css";
 
-const { title = "Broo's Playground Website" } = Astro.props;
+// `ogType` is "article" for a post and "website" for everything else — the one Open Graph field
+// that genuinely differs per page type.
+const { title = siteName, description = siteDescription, ogType = "website" } = Astro.props;
+
+// Subpages read "<page> — <site>" so a browser tab or a shared link carries both. The homepage
+// passes the site name itself, so guard against rendering it twice.
+const pageTitle = title === siteName ? siteName : `${title} — ${siteName}`;
+
+// Absolute URL of the page being rendered, for the canonical link and og:url. Both must be
+// absolute, and `Astro.site` is what makes that possible.
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -26,8 +38,27 @@ const { title = "Broo's Playground Website" } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 		<link rel="icon" href="/favicon.ico">
     {/* Feed autodiscovery — how a reader finds /rss.xml from any page on the site. */}
-    <link rel="alternate" type="application/rss+xml" title="Broo's Playground Website" href="/rss.xml">
-    <title>{title}</title>
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml">
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description}>
+    {/* Names one URL as authoritative, so a page reached via a deploy preview, a trailing-slash
+        variant or a query string doesn't get indexed as a separate copy. */}
+    <link rel="canonical" href={canonicalUrl}>
+
+    {/* Open Graph — how the page renders when pasted into a chat app or social post.
+        No og:image yet: nothing in public/ is suitable, so shares fall back to a text-only
+        card. Adding one image here would upgrade every page at once. */}
+    <meta property="og:type" content={ogType}>
+    <meta property="og:title" content={pageTitle}>
+    <meta property="og:description" content={description}>
+    <meta property="og:url" content={canonicalUrl}>
+    <meta property="og:site_name" content={siteName}>
+    <meta property="og:locale" content={siteLocale}>
+
+    {/* `summary` rather than `summary_large_image`, which would reserve space for an image
+        that isn't being supplied. Revisit alongside og:image. */}
+    <meta name="twitter:card" content="summary">
   </head>
   <body>
     <Header />

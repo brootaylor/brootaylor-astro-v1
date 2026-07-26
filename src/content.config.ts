@@ -13,7 +13,11 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.date(),
-    draft: z.boolean().optional()
+    draft: z.boolean().optional(),
+    // Optional so existing posts keep building. Where absent, the page falls back to the
+    // site-wide description — correct, but identical across every post, so it's worth
+    // filling in per post over time.
+    description: z.string().optional()
   }),
 });
 

@@ -7,8 +7,9 @@ import { formatDate, toDateTime } from "../utils/date";
 const { frontmatter } = Astro.props;
 ---
 
-{/* BaseLayout renders the <h1>, so the date goes first in the slot to land directly beneath it */}
-<BaseLayout title={frontmatter.title}>
+{/* BaseLayout renders the <h1>, so the date goes first in the slot to land directly beneath it.
+    `description` is optional in the schema — omitting it lets BaseLayout apply the site default. */}
+<BaseLayout title={frontmatter.title} description={frontmatter.description} ogType="article">
   <time datetime={toDateTime(frontmatter.date)}>{formatDate(frontmatter.date)}</time>
   <slot />
 </BaseLayout>

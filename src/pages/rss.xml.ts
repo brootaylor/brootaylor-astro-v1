@@ -14,6 +14,9 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 // Shared with the listing page so the draft filter and sort order can't drift apart.
 import { getPublishedPosts } from '../utils/posts';
 
+// Shared with BaseLayout so the feed and the pages can't disagree on what the site is called.
+import { siteName, siteDescription } from '../site';
+
 export async function GET(context: APIContext) {
   const posts = await getPublishedPosts();
   const container = await AstroContainer.create();
@@ -34,8 +37,8 @@ export async function GET(context: APIContext) {
   );
 
   return rss({
-    title: "Broo's Playground Website",
-    description: 'An experimental/playground website of sorts using the Astro web framework.',
+    title: siteName,
+    description: siteDescription,
     // `context.site` comes from `site` in astro.config.mjs, which is what makes the relative
     // `link` values above resolve to absolute URLs.
     site: context.site!,
