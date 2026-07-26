@@ -1,9 +1,21 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 
+// Date helpers, shared with the posts listing so both format identically.
+import { formatDate, toDateTime } from "../utils/date";
+
 const { frontmatter } = Astro.props;
 ---
 
+{/* BaseLayout renders the <h1>, so the date goes first in the slot to land directly beneath it */}
 <BaseLayout title={frontmatter.title}>
+  <time datetime={toDateTime(frontmatter.date)}>{formatDate(frontmatter.date)}</time>
   <slot />
 </BaseLayout>
+
+<style>
+  time {
+    display: block;
+    font-size: var(--fluid-type--1);
+  }
+</style>
