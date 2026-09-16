@@ -6,7 +6,7 @@
 export const siteName = "Broo's Playground Website";
 
 export const siteDescription =
-  'An experimental/playground website of sorts using the Astro web framework.';
+  'An experimental playground for web development ideas, techniques, features, demos and learnings, using the Astro web framework as the platform.';
 
 // Matches `lang="en-gb"` on the document. Open Graph wants the underscored form.
 export const siteLocale = 'en_GB';
