@@ -11,9 +11,8 @@ const timeZone = 'Europe/London';
 
 // Formats a post date for display. `en-GB` to match the document's `lang="en-gb"`.
 //
-// With a time: "7 October 2026 @ 4:00 PM BST". 12-hour clock, and the AM/PM is uppercased because
-// `en-GB` would otherwise give a lowercase "pm". The zone abbreviation comes from `timeZoneName`, so
-// it reads "GMT" in winter and "BST" in summer, always agreeing with the clock time beside it.
+// With a time: "7 October 2026 @ 4:00 PM". 12-hour clock, and the AM/PM is uppercased because
+// `en-GB` would otherwise give a lowercase "pm".
 //
 // Without one: "26 July 2026". Here `timeZone: 'UTC'` is load-bearing: a bare date is UTC midnight, so
 // formatting in the build machine's local zone, or in London during BST, would show the wrong day or
@@ -28,7 +27,7 @@ export const formatDate = (date: Date) => {
 
   const day = date.toLocaleDateString('en-GB', { ...dayOptions, timeZone });
   const time = date
-    .toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone, timeZoneName: 'short' })
+    .toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone })
     .toUpperCase();
 
   return `${day} @ ${time}`;
