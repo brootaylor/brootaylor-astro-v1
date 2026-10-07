@@ -6,9 +6,19 @@
 
 An experimental playground for web development ideas, techniques, features, demos and learnings, using the Astro web framework as the platform.
 
+Live at [playground.brootaylor.com](https://playground.brootaylor.com).
+
 ## Tech stack
 
-Deliberately vanilla and dependency-light: [Astro](https://astro.build), plus `@astrojs/rss` and `@astrojs/sitemap` for build-time feed/sitemap generation. No UI framework, no CSS framework — everything ships as static output with zero third-party JS in the browser.
+Deliberately vanilla and dependency-light: [Astro](https://astro.build), plus `@astrojs/rss` and `@astrojs/sitemap`, which only run at build time. No UI framework, no CSS framework, and everything ships as static output with zero third-party JS in the browser.
+
+## Features
+
+- Posts written in Markdown, with drafts that are never built
+- Light, dark and system themes, using native CSS with no JavaScript needed for the default
+- An RSS feed at `/rss.xml` with full post content
+- A sitemap, with a `lastmod` on each post
+- Meta description and Open Graph tags on every page
 
 ## Getting started
 
@@ -19,11 +29,37 @@ npm run build    # static output to dist/
 npm run preview  # serve the built dist/ locally
 ```
 
+The Node version is in `.nvmrc`.
+
+## Writing a post
+
+Add a Markdown file to `src/content/posts/`. The filename becomes the URL.
+
+```yaml
+---
+title: "A post title"
+date: 2026-10-07T15:00:00Z
+description: "Optional. Used for the meta description and social cards."
+updated: 2026-10-09T09:30:00Z
+draft: true
+---
+```
+
+`title` and `date` are required, and a build fails without them. `date` can be a bare day or carry a time, and `updated` is optional and shows beside it. Posts are listed newest first by `date`. A post with `draft: true` has no page built at all, so it can't appear in the listing, feed or sitemap. Preview one with `npm run dev`.
+
 ## Project structure
 
-- `src/pages/` — routes, including the posts listing/detail pages and the RSS endpoint
+- `src/pages/` — routes, including the posts listing and detail pages and the RSS endpoint
 - `src/layouts/` — `BaseLayout` (page shell) and `PostsLayout` (post-specific wrapper)
 - `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`, `Link`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
-- `src/utils/` — shared helpers (`date`, `slug`, `posts`)
+- `src/utils/` — shared helpers (`date`, `slug`, `posts`), plus `sitemap-lastmod.mjs`, which only the Astro config uses
 - `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`), ordered by cascade layers in `index.css`
+- `src/site.ts` — the site name, description and locale, shared by the page head and the feed
+- `public/` — favicons and `robots.txt`
+- `astro.config.mjs` — Astro config, including the sitemap
+- `netlify.toml` — build settings, redirects and security headers
+
+## Deployment
+
+Deployed to Netlify. `netlify.toml` is the source of truth for build settings and overrides the Netlify UI. To run the site locally with its redirects and headers applied, use `npx netlify dev`.
