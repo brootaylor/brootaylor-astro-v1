@@ -34,8 +34,7 @@
   /* Remove list markers and spacing, but only on lists that carry an explicit `role="list"`.
      Why the attribute? Safari/VoiceOver drops list semantics from a list whose marker has been
      removed with CSS, so the explicit role puts them back. It also means plain, unstyled
-     `<ul>`s keep their bullets (post listing, for instance). The convention is documented in
-     CLAUDE.md under "Markup". */
+     `<ul>`s keep their bullets (post listing, for instance). */
   [role="list"] {
     list-style: none;
     margin: 0;
