@@ -81,6 +81,21 @@
     max-width: 100%;
   }
 
+  /* Code blocks. Shiki (Astro's highlighter) sets the background colour and `overflow-x: auto`
+     inline on each <pre>, so long lines scroll rather than spilling out. What it doesn't set is
+     any breathing room, so the code sat hard against the edge of its background. The padding
+     uses a spacing token so it scales with everything else, and the radius softens the corners.
+
+     Blocks of code are set a step down the type scale: monospace text looks larger than
+     proportional text at the same size, and at body size a block was competing with the headings.
+     Only <pre> is changed. The <code> inside it inherits that size, and inline `code` in a
+     paragraph is deliberately left alone so it matches the surrounding text. */
+  pre {
+    padding: var(--fluid-space-xs-s);
+    border-radius: 0.25rem;
+    font-size: var(--fluid-type--2);
+  }
+
   hr {
     border: 0;
     background-color: var(--color-hr);

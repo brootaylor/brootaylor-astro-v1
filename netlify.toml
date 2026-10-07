@@ -3,7 +3,7 @@
 # Note: once this file is deployed, the [build] block below OVERRIDES whatever is set
 # in the Netlify UI. The UI settings become inert, so change build config here from now on.
 #
-# The Node version deliberately lives in `.nvmrc` (24.15.0) and is NOT repeated here.
+# The Node version deliberately lives in `.nvmrc` and is NOT repeated here (not even the number, which went stale once).
 # Netlify reads `.nvmrc` natively, and a NODE_VERSION set in this file would take
 # precedence over it — two sources of truth that could silently drift apart.
 

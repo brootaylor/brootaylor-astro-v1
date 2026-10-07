@@ -17,7 +17,17 @@ const posts = defineCollection({
     // Optional so existing posts keep building. Where absent, the page falls back to the
     // site-wide description — correct, but identical across every post, so it's worth
     // filling in per post over time.
-    description: z.string().optional()
+    description: z.string().optional(),
+    // When a post was last meaningfully changed. Optional: most posts never need it. Same format
+    // as `date`, so it can be a bare day or carry a time. It's shown on the post page and used as
+    // the post's <lastmod> in the sitemap (src/utils/sitemap-lastmod.mjs). Sorting and the feed
+    // still go by `date`, so editing a post never reshuffles the list.
+    updated: z.date().optional()
+  }).refine((post) => !post.updated || post.updated >= post.date, {
+    // Catches a mistyped year or a swapped pair at build time, instead of printing an "Updated"
+    // that predates the post itself.
+    message: '`updated` can\'t be earlier than `date`',
+    path: ['updated']
   }),
 });
 
