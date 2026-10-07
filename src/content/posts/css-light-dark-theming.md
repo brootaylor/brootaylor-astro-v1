@@ -28,9 +28,9 @@ That tells the browser the page supports both schemes. It follows the visitor's 
 Each colour token is a `light-dark()` pair: first value for light, second for dark.
 
 ```css
---color-bg: light-dark(hsl(0, 0%, 100%), hsl(0, 0%, 9%));
---color-body: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 88%));
---color-link: light-dark(hsl(240, 100%, 50%), hsl(213, 100%, 74%));
+--color-bg: light-dark(oklch(1 0 0), oklch(0.2 0 0));
+--color-body: light-dark(oklch(0 0 0), oklch(0.91 0 0));
+--color-link: light-dark(oklch(0.45 0.313 264), oklch(0.77 0.122 254));
 ```
 
 The browser picks whichever side matches the computed `color-scheme`. So there's no `prefers-color-scheme` media query and no second set of dark variables to forget to update. Adding a new colour means adding one pair. That's it.

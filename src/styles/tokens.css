@@ -27,10 +27,10 @@
 
        Neither end of the scale is pure black or white: slightly-off values avoid "halation"
        (glowing text) on OLED screens. */
-    --color-bg: light-dark(hsl(0, 0%, 100%), hsl(0, 0%, 9%));
-    --color-body: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 88%));
-    --color-link: light-dark(hsl(240, 100%, 50%), hsl(213, 100%, 74%));
-    --color-hr: light-dark(hsl(0, 0%, 90%), hsl(0, 0%, 22%));
+    --color-bg: light-dark(oklch(1 0 0), oklch(0.2 0 0));
+    --color-body: light-dark(oklch(0 0 0), oklch(0.91 0 0));
+    --color-link: light-dark(oklch(0.45 0.313 264), oklch(0.77 0.122 254));
+    --color-hr: light-dark(oklch(0.92 0 0), oklch(0.34 0 0));
 
     /* System font stack: no web font to download, so no layout shift and nothing extra shipped. */
     --ff-base: system-ui, sans-serif;

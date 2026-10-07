@@ -13,14 +13,14 @@ const message = "This website is an experimental space and very much a work in p
   @layer components {
     /* Scoped rather than global tokens — these amber values are specific to this banner */
     aside {
-      background-color: light-dark(hsl(48, 100%, 95%), hsl(48, 30%, 12%));
-      border: 1px solid light-dark(hsl(45, 100%, 85%), hsl(45, 35%, 26%));
+      background-color: light-dark(oklch(0.98 0.027 95), oklch(0.26 0.026 96));
+      border: 1px solid light-dark(oklch(0.94 0.076 92), oklch(0.43 0.054 92));
       padding: 1em;
       border-radius: 4px;
     }
 
     p {
-      color: light-dark(hsl(54, 100%, 20%), hsl(48, 55%, 78%));
+      color: light-dark(oklch(0.47 0.098 102), oklch(0.88 0.066 96));
     }
   }
 </style>
