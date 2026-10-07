@@ -1,6 +1,7 @@
 ---
 title: "Light and dark theming with light-dark()"
 date: 2026-09-28T10:08:36Z
+updated: 2026-10-07T17:30:56Z
 draft: false
 description: "One colour declaration that covers OS light, OS dark and a manual toggle, with no JavaScript needed for the baseline."
 ---
