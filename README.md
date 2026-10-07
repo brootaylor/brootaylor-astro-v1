@@ -63,3 +63,7 @@ draft: true
 ## Deployment
 
 Deployed to Netlify. `netlify.toml` is the source of truth for build settings and overrides the Netlify UI. To run the site locally with its redirects and headers applied, use `npx netlify dev`.
+
+---
+
+© [Bruce Taylor](https://brootaylor.com)
