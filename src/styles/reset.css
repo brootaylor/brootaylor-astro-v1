@@ -1,0 +1,102 @@
+/* ==========================================================================
+   Reset  (@layer reset)
+   ==========================================================================
+   Removes the browser's built-in defaults that get in the way, so everything after this
+   starts from a predictable baseline. It's the *first* (weakest) layer on purpose: any other
+   layer overrides it without needing a more specific selector. That's why some selectors
+   here (like `[role="list"]`) can be plain and low-weight and still never get in the way.
+   ========================================================================== */
+
+@layer reset {
+  /* Box sizing: padding and borders are included in an element's width/height, which makes
+     sizing far easier to reason about. Applied to pseudo-elements too so they match. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Remove default margins. Spacing is handled deliberately instead: by the `.flow` utility
+     (vertical rhythm between siblings) and the fluid spacing tokens. */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  /* Remove list markers and spacing, but only on lists that carry an explicit `role="list"`.
+     Why the attribute? Safari/VoiceOver drops list semantics from a list whose marker has been
+     removed with CSS, so the explicit role puts them back. It also means plain, unstyled
+     `<ul>`s keep their bullets (post listing, for instance). The convention is documented in
+     CLAUDE.md under "Markup". */
+  [role="list"] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Smooth scrolling is only switched on while something inside the page has focus
+     (e.g. after tabbing or following an in-page link) — see the motion rules below for the
+     matching `no-preference` rule that handles `:target`. Scoping it to `:focus-within`
+     avoids animating the scroll on plain page loads. */
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+
+  /* Buttons, inputs and selects don't inherit the page font by default — they use the OS
+     control font. Make them inherit so the theme toggle and any future form match the site. */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  /* ----- Motion ------
+     Respect people who've asked their OS to reduce motion (vestibular disorders, motion
+     sickness, or simple preference). This is the site-wide safety net: rather than every
+     animation having to remember to check, anything that animates is shortened to near-zero
+     (0.01ms rather than 0, because some scripts rely on `animationend`/`transitionend`
+     firing, and a true 0 can stop them).
+
+     `!important` is used deliberately here, and is safe because of how layers treat it:
+     for `!important` declarations the layer order is reversed, so an `!important` in the
+     earliest layer (this one) beats an `!important` anywhere later. That's exactly what a
+     "turn motion off" rule should do. It can't be undone by accident.
+
+     Heads up for the page transitions work: the `*` selectors below do not match view
+     transition pseudo-elements (`::view-transition-old(root)` etc.), so this rule does not
+     protect them. Those must be gated by `prefers-reduced-motion: no-preference` themselves. */
+  @media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* The opposite case: only when the person has NOT asked for reduced motion, smooth the
+     scroll to an in-page anchor. `:has(:target)` matches the root once the URL fragment points
+     at an element, and `scroll-padding-top` stops the target landing flush under the viewport
+     edge. Progressive enhancement: where `:has()` isn't supported the jump is simply instant. */
+  @media (prefers-reduced-motion: no-preference) {
+    :has(:target) {
+      scroll-behavior: smooth;
+      scroll-padding-top: 3rem;
+    }
+  }
+}

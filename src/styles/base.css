@@ -1,0 +1,91 @@
+/* ==========================================================================
+   Base  (@layer base)
+   ==========================================================================
+   Default styling for plain HTML elements: body, headings, links, images, rules. No classes
+   here, so anything that renders HTML (Markdown posts included) looks right without
+   needing markup changes. It sits after `reset` and `tokens`, so it can use the tokens and
+   cleanly override the reset, and before `components`/`utilities`, which can override it.
+
+   If a rule needs a class to apply, it's not "base": it belongs in a component or a utility.
+   ========================================================================== */
+
+@layer base {
+  html {
+    /* Lets opening quotes and bullets hang outside the text block so the text edge stays
+       aligned. Progressive enhancement: only Safari supports it at the moment (check MDN
+       before assuming otherwise); everywhere else it's ignored with no harm.
+       https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation */
+    hanging-punctuation: first last;
+  }
+
+  body {
+    /* At least a full screen tall, so the footer isn't left floating mid-page on short pages. */
+    min-height: 100vh;
+    /* Prioritise speed over fancy kerning/ligatures for body text. */
+    text-rendering: optimizeSpeed;
+    font-family: var(--ff-base);
+    font-size: var(--fluid-type-0);
+    /* Light weight is deliberate; headings override it below. */
+    font-weight: 300;
+    /* The background has to be set explicitly: without it dark mode only recolours the
+       text and leaves the browser's default white page behind it. */
+    background-color: var(--color-bg);
+    color: var(--color-body);
+    line-height: 1.5;
+    /* Fluid side gutters and top/bottom padding: wide margins on big screens, tight on phones. */
+    padding-inline: var(--fluid-space-s-2xl);
+    padding-block: var(--fluid-space-s-l);
+  }
+
+  /* `pretty` avoids a single orphaned word on the last line of paragraphs and list items.
+     Progressive enhancement: unsupported browsers just wrap normally. */
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2 {
+    line-height: 1.1;
+    /* `balance` evens out line lengths in short blocks like headings. Same fallback story. */
+    text-wrap: balance;
+  }
+
+  /* Reminder: BaseLayout renders the page's <h1> itself from the `title` prop, so page and
+     post bodies should start at <h2>. */
+  h1 {
+    font-size: var(--fluid-type-3);
+    font-weight: 900;
+  }
+
+  h2 {
+    font-size: var(--fluid-type-1);
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--color-link);
+    text-decoration: underline;
+  }
+
+  /* Links without a class (i.e. ordinary in-text links) get the browser to skip the underline
+     where it would cross a letter's descender (g, p, y). It's a readability nicety. */
+  a:not([class]) {
+    text-decoration-skip-ink: auto;
+  }
+
+  /* Images never overflow their container, and `display: block` removes the small gap that
+     inline images leave beneath them. */
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  hr {
+    border: 0;
+    background-color: var(--color-hr);
+    margin-top: 2rem;
+    margin-inline: 0 auto;
+    height: 0.1rem;
+  }
+}

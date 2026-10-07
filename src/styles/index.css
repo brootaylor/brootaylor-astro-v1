@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Stylesheet entry point
+   ==========================================================================
+   Imported once, by BaseLayout.astro. Everything global flows through here.
+
+   Why it's split up
+   The site used to have a single main.css. It was fine at ~200 lines, but this project is a
+   playground, so it will keep growing as new techniques get tried. Splitting by *purpose*
+   (tokens, reset, base, utilities…) means you always know which file to open, and a new
+   experiment gets its own file rather than being appended to a long one.
+
+   No Sass, no PostCSS: this is plain CSS. `@import` below is native CSS, and Astro's build
+   tooling (Vite) follows it and bundles everything into one stylesheet at build time.
+
+   Why cascade layers (@layer)
+   Normally the cascade is decided by specificity, then source order. That makes the order of
+   files matter, and it tempts you into specificity tricks to make a rule "win".
+   A cascade layer sits *above* both of those: a rule in a later layer beats a rule in an
+   earlier layer no matter how specific the earlier selector is or where it appears.
+   So the order below is the single source of truth for "what overrides what".
+   (Read left to right: later layers win.)
+
+     reset       Strip browser defaults. Deliberately the weakest layer, so anything beats it.
+     tokens      Design tokens: custom properties (colours, type scale, spacing scale).
+     base        Plain element styles (body, headings, links). No classes involved.
+     components  Styles that belong to one component. Each .astro file's <style> block is
+                 wrapped in `@layer components { … }` (see "Component styles" below).
+     utilities   Small single-purpose classes (.flow, .visually-hidden). Deliberately near the
+                 end so a utility reliably overrides a component when applied.
+     transitions Page/view transitions. Last, so the animation rules can't be undone by
+                 anything else. (File doesn't exist yet — see the note at the bottom.)
+
+   Component styles (the catch worth knowing about)
+   Styles that are NOT inside any @layer ("unlayered") beat ALL layered styles, whatever the
+   order above says. Astro's scoped <style> blocks are unlayered by default, so without the
+   `@layer components { … }` wrapper they would silently beat every utility. If you add a new
+   component, wrap its styles in that layer or this ordering stops being true.
+
+   Progressive enhancement
+   Each layer should work on its own as a sensible baseline. Newer CSS features go on top, and
+   where a missing feature would break layout or readability, guard it with `@supports` so older
+   browsers get the plain version rather than a broken one. If it merely looks plainer, that's fine.
+   ========================================================================== */
+
+/* Where the order is declared
+   Declaring every layer name up front, in order, is what fixes their priority, and that
+   statement lives in BaseLayout.astro's <head> as an inline <style>, not here. I originally
+   put it here, but the production CSS minifier merges the bundled styles and drops the
+   statement, so layers got ranked by whichever block happened to come first (components
+   landed below the reset). Keep this list in the same order as that statement. */
+
+/* Each file wraps its own contents in the matching `@layer` block, so the layer name is
+   visible right where the rules are written. */
+@import './reset.css';
+@import './tokens.css';
+@import './base.css';
+@import './utilities.css';
+
+/* Note: `components` has no import. Component styles live inside each .astro file, next to the
+   markup they style. The name is declared above purely to give them a slot in the order.
+
+   Note: `transitions` is declared but not yet imported — transitions.css arrives with the page
+   transitions work. Declaring an empty layer is harmless, and it keeps the order stable. */

@@ -1,0 +1,38 @@
+/* ==========================================================================
+   Utilities  (@layer utilities)
+   ==========================================================================
+   Small, single-purpose classes used across the markup. Kept deliberately few: if a pattern
+   belongs to one component it should live in that component's <style> block instead.
+
+   These come after `components` in the layer order, so a utility reliably wins over a
+   component's own rule when both apply, with no `!important` and no specificity games.
+   (That guarantee depends on component styles being wrapped in `@layer components`; see
+   index.css.)
+   ========================================================================== */
+
+@layer utilities {
+  /* Hides something visually while keeping it available to screen readers and keyboard
+     users (e.g. a label that's implied by the visual design). Unlike `display: none` or
+     `visibility: hidden`, it stays in the accessibility tree.
+     Why not `height: 0`? Some screen readers skip content with no height. */
+  .visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: auto;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+  }
+
+  /* "Flow": consistent vertical rhythm. Puts space above every child that follows another
+     child (the "owl" selector, `* + *`), so spacing only ever appears between items, never
+     before the first or after the last, and never needs margin on individual elements.
+     Apply it to any container whose children should be evenly spaced. The gap is a fluid token,
+     so it breathes with the viewport. */
+  .flow > * + * {
+    margin-top: var(--fluid-space-xs-s);
+  }
+}

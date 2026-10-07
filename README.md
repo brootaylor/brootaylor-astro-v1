@@ -26,4 +26,4 @@ npm run preview  # serve the built dist/ locally
 - `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`, `Link`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
 - `src/utils/` — shared helpers (`date`, `slug`, `posts`)
-- `src/styles/main.css` — single global stylesheet
+- `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`), ordered by cascade layers in `index.css`

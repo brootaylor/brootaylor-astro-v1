@@ -4,7 +4,9 @@ import Footer from "../components/Footer.astro";
 
 import { siteName, siteDescription, siteLocale } from "../site";
 
-import "../styles/main.css";
+// The one place global CSS is pulled in. index.css declares the cascade layer order and imports
+// the partials (reset, tokens, base, utilities) — see the comments there for how it all fits.
+import "../styles/index.css";
 
 // `ogType` is "article" for a post and "website" for everything else — the one Open Graph field
 // that genuinely differs per page type.
@@ -25,6 +27,16 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
+    {/* The cascade layer order for the whole site: later layers beat earlier ones, regardless of
+        specificity. It has to be an inline <style> first in the <head>, not a line in
+        src/styles/index.css. Layers rank by where they're first seen, and the build's CSS
+        minifier merges and reorders the bundled styles (components ended up first, which put
+        them below the reset), discarding the ordering statement in the process. An inline style
+        ahead of the bundle can't be reordered. Dev doesn't minify, so it looked fine locally and
+        was wrong in production. Add new layers here, and see index.css for what each one is for. */}
+    <style is:inline>
+      @layer reset, tokens, base, components, utilities, transitions;
+    </style>
     {/* Runs before the render-blocking stylesheet so a stored choice never flashes the wrong scheme.
         IIFE-wrapped because `is:inline` scripts share the global scope. */}
     <script is:inline>

@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Design tokens  (@layer tokens)
+   ==========================================================================
+   Every site-wide design decision lives here as a CSS custom property: colours, the font
+   stack, the type scale and the spacing scale. Other files reference these via `var(--…)`
+   rather than hardcoding values, so changing the look of the whole site is a one-file edit.
+
+   Custom properties inherit and are resolved at use time, so they don't care which layer
+   they're declared in relative to the rules that use them. The layer is just for tidiness.
+
+   Rule of thumb: `:root` holds only global, semantic tokens. A colour used by exactly one
+   component (e.g. the amber banner in Message.astro) stays in that component's own styles.
+   ========================================================================== */
+
+@layer tokens {
+  :root {
+    /* Tells the browser this page supports both schemes. This one line is what makes the
+       `light-dark()` colours below work, and it also gives native UI (scrollbars, form
+       controls) the right scheme for free. Everything theme-related hangs off this property.
+       https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme */
+    color-scheme: light dark;
+
+    /* Colours. Each is a `light-dark(<light value>, <dark value>)` pair, resolved against the
+       computed `color-scheme` above. So one declaration covers three modes: OS light, OS dark,
+       and the manual override further down. Never add a separate dark palette or a
+       `prefers-color-scheme` block; add a pair here instead.
+
+       Neither end of the scale is pure black or white: slightly-off values avoid "halation"
+       (glowing text) on OLED screens. */
+    --color-bg: light-dark(hsl(0, 0%, 100%), hsl(0, 0%, 9%));
+    --color-body: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 88%));
+    --color-link: light-dark(hsl(240, 100%, 50%), hsl(213, 100%, 74%));
+    --color-hr: light-dark(hsl(0, 0%, 90%), hsl(0, 0%, 22%));
+
+    /* System font stack: no web font to download, so no layout shift and nothing extra shipped. */
+    --ff-base: system-ui, sans-serif;
+
+    /* Fluid type scale. Each step is a `clamp(min, preferred, max)`: the size grows smoothly
+       with the viewport between a small-screen value and a large-screen value, with no
+       breakpoints. The comment on each step gives the range in px (small viewport → large
+       viewport). Step 0 is the base body size. The preferred values are interpolated, so
+       recalculate them as a set with a fluid-scale tool rather than nudging single numbers. */
+    /* Step -2: 12.5px → 12.8px */
+    --fluid-type--2: clamp(0.7813rem, 0.7736rem + 0.0341vw, 0.8rem);
+    /* Step -1: 15px → 16px */
+    --fluid-type--1: clamp(0.9375rem, 0.9119rem + 0.1136vw, 1rem);
+    /* Step 0: 18px → 20px */
+    --fluid-type-0: clamp(1.125rem, 1.0739rem + 0.2273vw, 1.25rem);
+    /* Step 1: 21.6px → 25px */
+    --fluid-type-1: clamp(1.35rem, 1.2631rem + 0.3864vw, 1.5625rem);
+    /* Step 2: 25.92px → 31.25px */
+    --fluid-type-2: clamp(1.62rem, 1.4837rem + 0.6057vw, 1.9531rem);
+    /* Step 3: 31.104px → 39.0625px */
+    --fluid-type-3: clamp(1.944rem, 1.7405rem + 0.9044vw, 2.4414rem);
+    /* Step 4: 37.3248px → 48.8281px */
+    --fluid-type-4: clamp(2.3328rem, 2.0387rem + 1.3072vw, 3.0518rem);
+    /* Step 5: 44.7898px → 61.0352px */
+    --fluid-type-5: clamp(2.7994rem, 2.384rem + 1.8461vw, 3.8147rem);
+
+    /* Fluid spacing scale. Same idea as the type scale. The names read "small-viewport size →
+       large-viewport size", e.g. `s-2xl` grows from the "s" step to the "2xl" step. Pairs let
+       a gap loosen up on big screens without media queries. */
+    /* Space xs-s: 14px → 20px */
+    --fluid-space-xs-s: clamp(0.875rem, 0.7216rem + 0.6818vw, 1.25rem);
+    /* Space s-m: 18px → 30px */
+    --fluid-space-s-m: clamp(1.125rem, 0.8182rem + 1.3636vw, 1.875rem);
+    /* Space s-l: 18px → 40px */
+    --fluid-space-s-l: clamp(1.125rem, 0.5625rem + 2.5vw, 2.5rem);
+    /* Space s-xl: 18px → 60px */
+    --fluid-space-s-xl: clamp(1.125rem, 0.0511rem + 4.7727vw, 3.75rem);
+    /* Space s-2xl: 18px → 80px */
+    --fluid-space-s-2xl: clamp(1.125rem, -0.4602rem + 7.0455vw, 5rem);
+  }
+
+  /* Manual theme override. ThemeToggle.astro sets `data-theme` on <html> when a visitor picks
+     Light or Dark explicitly (and the inline script in BaseLayout's <head> re-applies it
+     before first paint, to avoid a flash). Overriding `color-scheme` is enough: every
+     `light-dark()` token above re-resolves at once, so no colour is duplicated anywhere.
+
+     With NO `data-theme` attribute, the `light dark` value above stands and the browser follows
+     the OS via `prefers-color-scheme` natively, with no JavaScript involved. That's the
+     progressive-enhancement baseline: a visitor without JS still gets correct theming. */
+  :root[data-theme="light"] {
+    color-scheme: light;
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+  }
+}
