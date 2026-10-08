@@ -1,7 +1,7 @@
 ---
 title: "Page transitions with native view transitions"
 description: "A cross-page fade, a header and footer that stay put, and a smoother theme switch, all with native view transitions and no router."
-date: 2026-10-07T19:34:12Z
+date: 2026-10-07T20:34:12
 draft: false
 ---
 

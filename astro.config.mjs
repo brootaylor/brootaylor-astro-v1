@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { addPostLastmod } from "./src/utils/sitemap-lastmod.ts";
+import { serviceWorker } from "./src/integrations/service-worker.ts";
 
 // https://astro.build/config
 export default defineConfig({
@@ -66,11 +67,15 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      // The feed is for readers, not crawlers, and isn't an HTML page. Everything else the
-      // build emits is a real page worth indexing.
-      filter: (page) => !page.endsWith("/rss.xml"),
+      // The feed is for readers, not crawlers, and isn't an HTML page. The offline page is only
+      // ever shown by the service worker. Everything else the build emits is a real page worth
+      // indexing.
+      filter: (page) => !page.endsWith("/rss.xml") && !page.endsWith("/offline/"),
       // Gives each post a <lastmod>. See the helper for why only posts.
       serialize: addPostLastmod,
     }),
+    // Writes dist/sw.js, the service worker, once the build is done. It needs the finished
+    // build to know the hashed file names, so it can't be a static file in public/.
+    serviceWorker(),
   ],
 });

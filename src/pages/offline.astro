@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// The page the service worker shows when a visit can't be served from the network or its cache.
+// It is stored when the worker installs (see src/integrations/service-worker.ts), and it has no
+// business in search results, so it opts out with `noindex` and is left out of the sitemap.
+// The links are the pages the worker stores on install: keep them in step with `precachedPages`
+// in that integration.
+const title = "You're offline";
+---
+
+<BaseLayout title={title} noindex>
+  <p>The connection seems to have dropped, and this page isn't one I've kept a copy of. It should work again once you're back online.</p>
+  <h2>Pages that work offline</h2>
+  <ul role="list">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/posts/">Posts</a></li>
+  </ul>
+  <p>Any post you've already read should be there too.</p>
+</BaseLayout>

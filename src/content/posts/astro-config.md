@@ -1,8 +1,8 @@
 ---
 title: "How this Astro site is put together"
 description: "A tour of the config and architecture behind this site: a tiny Astro config, content collections, layouts, a feed, a sitemap and a build that ships no third party code."
-date: 2026-09-14T19:41:08Z
-updated: 2026-10-08T10:57:48Z
+date: 2026-09-14T20:41:08
+updated: 2026-10-08T23:16:48
 draft: false
 ---
 
@@ -26,6 +26,7 @@ There are three runtime dependencies: `astro`, `@astrojs/rss` and `@astrojs/site
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { addPostLastmod } from "./src/utils/sitemap-lastmod.ts";
+import { serviceWorker } from "./src/integrations/service-worker.ts";
 
 export default defineConfig({
   site: "https://playground.brootaylor.com",
@@ -59,14 +60,15 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      filter: (page) => !page.endsWith("/rss.xml"),
+      filter: (page) => !page.endsWith("/rss.xml") && !page.endsWith("/offline/"),
       serialize: addPostLastmod,
     }),
+    serviceWorker(),
   ],
 });
 ```
 
-`site` is the production URL, used only to build absolute URLs for the sitemap, the feed and the canonical and Open Graph tags. It doesn't affect the dev server, which still serves `localhost:4321`. The sitemap filter drops `/rss.xml`, because the feed is for readers rather than crawlers, and `serialize` is what adds a `<lastmod>` to posts (more on that below).
+`site` is the production URL, used only to build absolute URLs for the sitemap, the feed and the canonical and Open Graph tags. It doesn't affect the dev server, which still serves `localhost:4321`. The sitemap filter drops `/rss.xml`, because the feed is for readers rather than crawlers, and the offline page, which only the service worker ever shows. `serialize` is what adds a `<lastmod>` to posts, and `serviceWorker()` is a small integration of my own (more on both below).
 
 ### How the CSS and scripts are shipped
 
@@ -90,7 +92,7 @@ The bit I'm happiest with is a tiny helper, `getPublishedPosts()`. It's the one 
 
 That means a draft isn't hidden so much as never built. There's no page, no listing entry, no feed item and no sitemap entry. The only way to see one is `npm run dev`. I'd originally filtered drafts in one place and found out they were still reachable by guessing the URL, so now there's one rule instead of several that could drift apart.
 
-Dates work the same way. One small helper formats them for display and another produces the machine readable version, so the listing and the post page can't disagree. A date can be a bare day or carry a time, and a time is shown in London time, like `7 October 2026 @ 4:00 PM`. A bare day is read as midnight UTC, so it's formatted in UTC. Formatting it in the build machine's own time zone could show the previous day.
+Dates work the same way. One small helper formats them for display and another produces the machine readable version, so the listing and the post page can't disagree. A date can be a bare day or carry a time. I write a time as it reads on my clock in London, with no time zone, and the build works out whether that was BST or GMT, so the page shows exactly what I typed, like `7 October 2026 @ 4:00 PM`. A bare day is read as midnight UTC, so it's formatted in UTC. Formatting it in the build machine's own time zone could show the previous day.
 
 ---
 
@@ -102,7 +104,7 @@ The head is built from a small `site.ts` file holding the site name, description
 
 Navigation is a hardcoded list of links in a component. There's deliberately no hamburger menu: the links wrap onto a second line rather than overflowing, so it works at any width with no JavaScript.
 
-Browser JavaScript follows the same idea as the CSS. A component that needs a script keeps it in its own `<script>` block, next to its markup, and the theme toggle is the example. `src/scripts/` is for the whole site: one entry file, `main.ts`, imports site-wide modules and calls them, and shared helpers like `withViewTransition()` live there too. Right now `main.ts` only calls a small demo module that logs a quote to the console, there to show the pattern. The bundled scripts are TypeScript, and Astro turns each into an external file. The only inline script left is the small one in the `<head>` that has to run before first paint.
+Browser JavaScript follows the same idea as the CSS. A component that needs a script keeps it in its own `<script>` block, next to its markup, and the theme toggle is the example. `src/scripts/` is for the whole site: one entry file, `main.ts`, imports site-wide modules and calls them, and shared helpers like `withViewTransition()` live there too. Right now `main.ts` only calls a small demo module that logs a quote to the console, there to show the pattern. The bundled scripts are TypeScript, and Astro turns each into an external file. There are two inline scripts: the small one in the `<head>` that has to run before first paint, and the few lines at the end of the page that register the service worker.
 
 ---
 
@@ -113,6 +115,16 @@ The RSS feed is a static endpoint that carries full post content, not just title
 The sitemap integration writes `sitemap-index.xml` and `sitemap-0.xml`. The index filename isn't configurable, so a Netlify redirect covers `/sitemap.xml` for any crawler that guesses it, and `robots.txt` points at the real file with an absolute URL.
 
 Posts also get a `<lastmod>`, which is their `updated` date, or their `date` if they've never been updated. Other pages don't get one, on purpose: a date that changes on every deploy would teach crawlers to ignore the field. The config can't read the content collection, so that bit of code reads the frontmatter itself. It's the one place the "updated, else date" rule is written down twice.
+
+---
+
+## Working offline
+
+There's a service worker, so pages you've visited still load without a connection, and a simple offline page covers the ones you haven't. It's hand-written rather than built with a library like Workbox, because it only needs two caches and a handful of rules.
+
+The awkward part is that the CSS and JavaScript file names carry a hash that changes whenever their contents do, so the worker can't have a hand-written list of files to store. A small integration of my own runs once the build is done, reads the real file names out of `dist/`, and writes them into the worker along with a version. The version is a hash of the built pages, so I never have to remember to bump it. A deploy that changes nothing produces an identical worker.
+
+Because those hashed files never change, they're kept across deploys and only downloaded once. Pages are fetched fresh when the network's there, and the cached copy is used when it isn't. The worker is only registered in a production build, so it can never hide my changes behind a cache while I'm working on the site.
 
 ---
 
@@ -133,9 +145,9 @@ The CSS is plain native CSS, split into partials and ordered with cascade layers
 
 There's no `@astrojs/netlify` adapter. It's for server rendering, and this build is static, so it would add a dependency and a server runtime for nothing.
 
-The CSS file name includes a content hash, so a URL never changes what it contains. `netlify.toml` takes advantage of that and tells browsers to cache anything under `/_astro/` for a year, as `immutable`. When the CSS changes, so does the name, and everyone gets the new file.
+The CSS file name includes a content hash, so a URL never changes what it contains. `netlify.toml` takes advantage of that and tells browsers to cache anything under `/_astro/` for a year, as `immutable`. When the CSS changes, so does the name, and everyone gets the new file. The service worker is the opposite: its name never changes, so it's served `no-cache`, and the browser checks for a new one on every visit.
 
-Security headers live in `netlify.toml` too. The Content Security Policy needs `'unsafe-inline'`, because the small theme script in the `<head>` has to be inline to run before the first paint, and the cascade layer order statement has to stay an inline style. Hashes would break on every edit, and nonces need a server. The other directives still earn their place, blocking things like framing and form hijacking.
+Security headers live in `netlify.toml` too. The Content Security Policy needs `'unsafe-inline'`, because the small theme script in the `<head>` has to be inline to run before the first paint, and the cascade layer order statement has to stay an inline style. The service worker registration is inline too, though that one's a choice rather than a necessity. Hashes would break on every edit, and nonces need a server. The other directives still earn their place, blocking things like framing and form hijacking.
 
 ---
 

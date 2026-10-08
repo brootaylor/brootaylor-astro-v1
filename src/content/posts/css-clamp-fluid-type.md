@@ -1,7 +1,7 @@
 ---
 title: "Fluid type and spacing with clamp()"
 description: "How a handful of clamp() values give the whole site a smoothly scaling type and spacing system, with no breakpoints."
-date: 2026-10-03T16:22:51Z
+date: 2026-10-03T17:22:51
 draft: false
 ---
 

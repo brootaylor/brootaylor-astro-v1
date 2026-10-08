@@ -9,8 +9,9 @@ import { siteName, siteDescription, siteLocale } from "../site";
 import "../styles/index.css";
 
 // `ogType` is "article" for a post and "website" for everything else — the one Open Graph field
-// that genuinely differs per page type.
-const { title = siteName, description = siteDescription, ogType = "website" } = Astro.props;
+// that genuinely differs per page type. `noindex` keeps a page out of search results; only the
+// offline page uses it.
+const { title = siteName, description = siteDescription, ogType = "website", noindex = false } = Astro.props;
 
 // Subpages read "<page> — <site>" so a browser tab or a shared link carries both. The homepage
 // passes the site name itself, so guard against rendering it twice.
@@ -55,6 +56,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
     <title>{pageTitle}</title>
     <meta name="description" content={description}>
+    {noindex && <meta name="robots" content="noindex">}
     {/* Names one URL as authoritative, so a page reached via a deploy preview, a trailing-slash
         variant or a query string doesn't get indexed as a separate copy. */}
     <link rel="canonical" href={canonicalUrl}>
@@ -86,5 +88,21 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <script>
       import '../scripts/main';
     </script>
+    {/* Registers the service worker (src/service-worker/sw.js, built to /sw.js). It's inline rather
+        than in main.ts because it's plumbing, not page behaviour, and needs nothing else to
+        load first. Rendered in production builds only: in dev a worker would serve cached pages
+        and hide edits. Registers after `load` so the worker's downloads don't compete with the
+        page's own. */}
+    {import.meta.env.PROD && (
+      <script is:inline>
+        if ('serviceWorker' in navigator) {
+          addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch((error) => {
+              console.warn('Offline support is unavailable:', error);
+            });
+          });
+        }
+      </script>
+    )}
   </body>
 </html>

@@ -11,6 +11,7 @@
 // the two in step. It only handles simple `key: value` frontmatter lines and a flat posts folder,
 // which is all there is today.
 import { readdirSync, readFileSync } from 'node:fs';
+import { fromLondonTime } from './date';
 
 const postsDir = new URL('../content/posts/', import.meta.url);
 
@@ -22,9 +23,13 @@ for (const file of readdirSync(postsDir).filter((name) => /\.mdx?$/.test(name)))
   const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
   const read = (key: string) => frontmatter.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, 'm'))?.[1];
 
-  // A bare day parses as UTC midnight, the same as YAML does when Astro loads the post.
-  const lastmod = new Date(read('updated') ?? read('date'));
-  if (!Number.isNaN(lastmod.valueOf())) lastmods.set(file.replace(/\.mdx?$/, ''), lastmod);
+  // Read the value the way YAML does when Astro loads the post: a bare day as UTC midnight, and a
+  // time with no zone as UTC too (JavaScript alone would use the build machine's zone). Then treat
+  // it as London clock time, exactly as the content schema does.
+  const value = read('updated') ?? read('date') ?? '';
+  const asYaml = /T[\d:.]+$/.test(value) ? `${value}Z` : value;
+  const parsed = new Date(asYaml);
+  if (!Number.isNaN(parsed.valueOf())) lastmods.set(file.replace(/\.mdx?$/, ''), fromLondonTime(parsed));
 }
 
 export const addPostLastmod = (item: { url: string }) => {

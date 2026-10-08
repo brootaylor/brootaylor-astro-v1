@@ -7,12 +7,16 @@ import { glob } from 'astro/loaders';
 // 3. Import Zod
 import { z } from 'astro/zod';
 
+// Frontmatter times are London clock time; this turns them into the real moment. See date.ts.
+import { fromLondonTime } from './utils/date';
+
 // 4. Defining collection(s)
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
   schema: z.object({
     title: z.string(),
-    date: z.date(),
+    // A bare day (`2026-10-08`) or a London clock time with no `Z` (`2026-10-08T23:16:48`).
+    date: z.date().transform(fromLondonTime),
     draft: z.boolean().optional(),
     // Optional so a post without one still builds. Where absent, the page falls back to the
     // site-wide description — correct, but identical across every post, so it's worth filling
@@ -22,7 +26,7 @@ const posts = defineCollection({
     // as `date`, so it can be a bare day or carry a time. It's shown on the post page and used as
     // the post's <lastmod> in the sitemap (src/utils/sitemap-lastmod.ts). Sorting and the feed
     // still go by `date`, so editing a post never reshuffles the list.
-    updated: z.date().optional()
+    updated: z.date().transform(fromLondonTime).optional()
   }).refine((post) => !post.updated || post.updated >= post.date, {
     // Catches a mistyped year or a swapped pair at build time, instead of printing an "Updated"
     // that predates the post itself.

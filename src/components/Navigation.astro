@@ -1,5 +1,9 @@
 ---
 import Link from "./Link.astro";
+
+// The service worker stores these pages when it installs, so they work offline. Adding or
+// removing a link here means updating `precachedPages` in src/integrations/service-worker.ts
+// and the list on src/pages/offline.astro.
 ---
 
 <nav>

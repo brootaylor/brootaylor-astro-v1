@@ -45,11 +45,21 @@
 
     # `'unsafe-inline'` is unavoidable here, not laziness: the theme script in BaseLayout's <head>
     # is inline so it runs before first paint, and the cascade layer order statement has to stay an
-    # inline <style>. The main stylesheet and the bundled scripts are external files. Hashes
-    # would break on every edit to the theme code; nonces need a server, which static hosting
+    # inline <style>. The service worker registration at the end of <body> is inline too, by choice
+    # rather than necessity; it could move to a file, but the first two can't. The main stylesheet
+    # and the bundled scripts are external files. Hashes would break on every edit to the inline
+    # code; nonces need a server, which static hosting
     # doesn't provide. The remaining directives are still worth having — they block framing,
     # base-tag hijacking, form exfiltration and plugin content.
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+# The service worker keeps one fixed name, so the browser has to ask the server whether it has
+# changed every time, or a deploy would never reach returning visitors. `no-cache` still allows
+# a cached copy, but only after revalidating it.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
 
 # Astro puts a content hash in every file name under /_astro/, so a given URL never changes
 # its contents. That makes it safe to cache for a year: when the CSS or JS changes, so does the name.

@@ -20,6 +20,7 @@ Deliberately vanilla and dependency-light: [Astro](https://astro.build), plus `@
 - A sitemap, with a `lastmod` on each post
 - Meta description and Open Graph tags on every page
 - Page transitions using native view transitions, switched off for anyone who prefers reduced motion
+- A service worker for offline reading and faster repeat visits, with an offline fallback page
 
 ## Getting started
 
@@ -32,6 +33,8 @@ npm run preview  # serve the built dist/ locally
 
 The Node version is in `.nvmrc`.
 
+The service worker is only registered in a production build, so it never caches the dev server. To try it, run `npm run build && npm run preview`.
+
 ## Writing a post
 
 Add a Markdown file to `src/content/posts/`. The filename becomes the URL.
@@ -40,27 +43,29 @@ Add a Markdown file to `src/content/posts/`. The filename becomes the URL.
 ---
 title: "A post title"
 description: "Optional. Used for the meta description and social cards."
-date: 2026-10-07T15:00:00Z
-updated: 2026-10-09T09:30:00Z
+date: 2026-10-07T16:00:00
+updated: 2026-10-09T09:30:00
 draft: true
 ---
 ```
 
-`title` and `date` are required, and a build fails without them. Keep the keys in the order shown. `date` can be a bare day or carry a time, and `updated` is optional and shows beside it. Posts are listed newest first by `date`. A post with `draft: true` has no page built at all, so it can't appear in the listing, feed or sitemap. Preview one with `npm run dev`.
+`title` and `date` are required, and a build fails without them. Keep the keys in the order shown. `date` can be a bare day or carry a time, and `updated` is optional and shows beside it. Write times as London clock time, with no `Z` on the end: whatever the clock says, BST or GMT, is what the page shows. Posts are listed newest first by `date`. A post with `draft: true` has no page built at all, so it can't appear in the listing, feed or sitemap. Preview one with `npm run dev`.
 
 ## Project structure
 
-- `src/pages/` — routes, including the posts listing and detail pages and the RSS endpoint
+- `src/pages/` — routes, including the posts listing and detail pages, the RSS endpoint and the offline page
 - `src/layouts/` — `BaseLayout` (page shell) and `PostsLayout` (post-specific wrapper)
 - `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`, `Link`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
 - `src/utils/` — shared helpers (`date`, `slug`, `posts`), plus `sitemap-lastmod.ts`, which only the Astro config uses
 - `src/scripts/` — browser-only TypeScript for site-wide behaviour (`main.ts` is the entry, currently calling a demo `quote` module) and shared helpers (`view-transition`). Logic that belongs to one component stays in that component
+- `src/service-worker/` — the service worker template, `sw.js`
+- `src/integrations/` — `service-worker.ts`, a build-time Astro integration that fills in that template and writes `dist/sw.js`
 - `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`, `transitions`), ordered by cascade layers in `index.css`
 - `src/site.ts` — the site name, description and locale, shared by the page head and the feed
 - `public/` — favicons and `robots.txt`
-- `astro.config.mjs` — Astro config, including the sitemap
-- `netlify.toml` — build settings, redirects and security headers
+- `astro.config.mjs` — Astro config, including the sitemap and the service worker integration
+- `netlify.toml` — build settings, redirects, security and caching headers
 
 ## Deployment
 

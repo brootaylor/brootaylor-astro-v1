@@ -1,8 +1,8 @@
 ---
 title: "Helpful Linux commands"
 description: "A personal cheat sheet of the Linux commands I reach for most: listing, moving and finding files, searching, system info and processes."
-date: 2026-02-24T18:25:36.671Z
-updated: 2026-10-07T20:17:42Z
+date: 2026-02-24T18:25:36.671
+updated: 2026-10-07T21:17:42
 draft: false
 ---
 

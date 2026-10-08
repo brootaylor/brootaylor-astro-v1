@@ -1,13 +1,43 @@
 // Date helpers for posts. A post's `date` can be a bare day (`date: 2026-02-22`) or carry a time
-// (`date: 2026-10-07T15:00:00Z`). YAML parses the bare form as UTC midnight, so "is it exactly UTC
+// (`date: 2026-10-07T16:00:00`). YAML parses the bare form as UTC midnight, so "is it exactly UTC
 // midnight?" is how we tell the two apart: those get a date only, everything else gets a time too.
-// Consequence: an explicit `T00:00:00Z` is indistinguishable from a bare date and shows no time.
+// Consequence: a time of exactly midnight is indistinguishable from a bare date and shows no time.
 const hasTime = (date: Date) => date.getTime() % 86_400_000 !== 0;
 
-// The zone times are shown in. The site is `en-gb`, so a UK reader expects UK clock time (BST in
-// summer), not UTC, which would read an hour out for half the year. The date and time are both
-// formatted in this zone so they can't disagree near midnight.
+// The zone times are written and shown in. The site is `en-gb`, so a UK reader expects UK clock
+// time (BST in summer), not UTC, which would read an hour out for half the year. The date and time
+// are both formatted in this zone so they can't disagree near midnight.
 const timeZone = 'Europe/London';
+
+// How far London's clock is ahead of UTC at a given moment, in milliseconds: 0 in GMT, an hour in BST.
+const londonOffset = (utcMs: number) => {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone, hourCycle: 'h23',
+      year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+    })
+      .formatToParts(utcMs)
+      .map(({ type, value }) => [type, Number(value)])
+  );
+  const asLondonClock = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+  return asLondonClock - (utcMs - (utcMs % 1000));
+};
+
+// Frontmatter times are London clock time, as read off a watch in the UK: write
+// `updated: 2026-10-08T23:16:48` with no `Z` and no worrying about BST. YAML has no idea of
+// London, so it reads that as 23:16:48 UTC. This shifts it back by whatever London's offset was
+// at the time, giving the real moment. The schema in src/content.config.ts applies it to `date`
+// and `updated`, and src/utils/sitemap-lastmod.ts does the same for its own copy.
+//
+// A bare day is left alone: it stays UTC midnight, which is what marks it as having no time. The
+// offset is worked out twice so a time near a clock change settles on the right side of it.
+export const fromLondonTime = (date: Date) => {
+  if (!hasTime(date)) return date;
+
+  const clock = date.getTime();
+  const firstGuess = clock - londonOffset(clock);
+  return new Date(clock - londonOffset(firstGuess));
+};
 
 // Formats a post date for display. `en-GB` to match the document's `lang="en-gb"`.
 //

@@ -1,8 +1,8 @@
 ---
 title: "Taming the cascade with @layer"
 description: "Splitting a single stylesheet into cascade layers, and the production build gotcha that only showed up after I'd shipped it."
-date: 2026-10-06T08:47:23Z
-updated: 2026-10-08T10:57:48Z
+date: 2026-10-06T09:47:23
+updated: 2026-10-08T11:57:48
 draft: false
 ---
 
