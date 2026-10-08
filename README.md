@@ -54,7 +54,7 @@ draft: true
 - `src/layouts/` — `BaseLayout` (page shell) and `PostsLayout` (post-specific wrapper)
 - `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`, `Link`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
-- `src/utils/` — shared helpers (`date`, `slug`, `posts`), plus `sitemap-lastmod.mjs`, which only the Astro config uses
+- `src/utils/` — shared helpers (`date`, `slug`, `posts`), plus `sitemap-lastmod.ts`, which only the Astro config uses
 - `src/scripts/` — browser-only TypeScript for site-wide behaviour (`main.ts` is the entry, currently calling a demo `quote` module) and shared helpers (`view-transition`). Logic that belongs to one component stays in that component
 - `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`, `transitions`), ordered by cascade layers in `index.css`
 - `src/site.ts` — the site name, description and locale, shared by the page head and the feed

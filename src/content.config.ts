@@ -20,7 +20,7 @@ const posts = defineCollection({
     description: z.string().optional(),
     // When a post was last meaningfully changed. Optional: most posts never need it. Same format
     // as `date`, so it can be a bare day or carry a time. It's shown on the post page and used as
-    // the post's <lastmod> in the sitemap (src/utils/sitemap-lastmod.mjs). Sorting and the feed
+    // the post's <lastmod> in the sitemap (src/utils/sitemap-lastmod.ts). Sorting and the feed
     // still go by `date`, so editing a post never reshuffles the list.
     updated: z.date().optional()
   }).refine((post) => !post.updated || post.updated >= post.date, {

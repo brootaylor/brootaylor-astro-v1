@@ -25,7 +25,7 @@ There are three runtime dependencies: `astro`, `@astrojs/rss` and `@astrojs/site
 ```js
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import { addPostLastmod } from "./src/utils/sitemap-lastmod.mjs";
+import { addPostLastmod } from "./src/utils/sitemap-lastmod.ts";
 
 export default defineConfig({
   site: "https://playground.brootaylor.com",

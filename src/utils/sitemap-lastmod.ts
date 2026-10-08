@@ -9,7 +9,7 @@
 // astro.config.mjs runs before Astro's content layer exists, so `astro:content` isn't available.
 // The cost is a second copy of the "updated, else date" rule that PostsLayout applies, so keep
 // the two in step. It only handles simple `key: value` frontmatter lines and a flat posts folder,
-// which is all there is today. That's also why it's plain `.mjs` rather than `.ts`.
+// which is all there is today.
 import { readdirSync, readFileSync } from 'node:fs';
 
 const postsDir = new URL('../content/posts/', import.meta.url);
@@ -20,14 +20,14 @@ const lastmods = new Map();
 for (const file of readdirSync(postsDir).filter((name) => /\.mdx?$/.test(name))) {
   const source = readFileSync(new URL(file, postsDir), 'utf8');
   const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-  const read = (key) => frontmatter.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, 'm'))?.[1];
+  const read = (key: string) => frontmatter.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, 'm'))?.[1];
 
   // A bare day parses as UTC midnight, the same as YAML does when Astro loads the post.
   const lastmod = new Date(read('updated') ?? read('date'));
   if (!Number.isNaN(lastmod.valueOf())) lastmods.set(file.replace(/\.mdx?$/, ''), lastmod);
 }
 
-export const addPostLastmod = (item) => {
+export const addPostLastmod = (item: { url: string }) => {
   const slug = new URL(item.url).pathname.match(/^\/posts\/([^/]+)\/$/)?.[1];
   const lastmod = lastmods.get(slug);
 

@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import { addPostLastmod } from "./src/utils/sitemap-lastmod.mjs";
+import { addPostLastmod } from "./src/utils/sitemap-lastmod.ts";
 
 // https://astro.build/config
 export default defineConfig({
