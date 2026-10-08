@@ -28,7 +28,7 @@
      utilities   Small single-purpose classes (.flow, .visually-hidden). Deliberately near the
                  end so a utility reliably overrides a component when applied.
      transitions Page/view transitions. Last, so the animation rules can't be undone by
-                 anything else. (File doesn't exist yet — see the note at the bottom.)
+                 anything else. (transitions.css: a cross-page fade, with the header and footer held still.)
 
    Component styles (the catch worth knowing about)
    Styles that are NOT inside any @layer ("unlayered") beat ALL layered styles, whatever the
@@ -55,9 +55,7 @@
 @import './tokens.css';
 @import './base.css';
 @import './utilities.css';
+@import './transitions.css';
 
 /* Note: `components` has no import. Component styles live inside each .astro file, next to the
-   markup they style. The name is declared above purely to give them a slot in the order.
-
-   Note: `transitions` is declared but not yet imported — transitions.css arrives with the page
-   transitions work. Declaring an empty layer is harmless, and it keeps the order stable. */
+   markup they style. The name is declared above purely to give them a slot in the order. */

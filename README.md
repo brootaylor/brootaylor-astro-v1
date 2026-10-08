@@ -19,6 +19,7 @@ Deliberately vanilla and dependency-light: [Astro](https://astro.build), plus `@
 - An RSS feed at `/rss.xml` with full post content
 - A sitemap, with a `lastmod` on each post
 - Meta description and Open Graph tags on every page
+- Page transitions using native view transitions, switched off for anyone who prefers reduced motion
 
 ## Getting started
 
@@ -38,14 +39,14 @@ Add a Markdown file to `src/content/posts/`. The filename becomes the URL.
 ```yaml
 ---
 title: "A post title"
-date: 2026-10-07T15:00:00Z
 description: "Optional. Used for the meta description and social cards."
+date: 2026-10-07T15:00:00Z
 updated: 2026-10-09T09:30:00Z
 draft: true
 ---
 ```
 
-`title` and `date` are required, and a build fails without them. `date` can be a bare day or carry a time, and `updated` is optional and shows beside it. Posts are listed newest first by `date`. A post with `draft: true` has no page built at all, so it can't appear in the listing, feed or sitemap. Preview one with `npm run dev`.
+`title` and `date` are required, and a build fails without them. Keep the keys in the order shown. `date` can be a bare day or carry a time, and `updated` is optional and shows beside it. Posts are listed newest first by `date`. A post with `draft: true` has no page built at all, so it can't appear in the listing, feed or sitemap. Preview one with `npm run dev`.
 
 ## Project structure
 
@@ -54,7 +55,8 @@ draft: true
 - `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`, `Link`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
 - `src/utils/` — shared helpers (`date`, `slug`, `posts`), plus `sitemap-lastmod.mjs`, which only the Astro config uses
-- `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`), ordered by cascade layers in `index.css`
+- `src/scripts/` — browser-only TypeScript for site-wide behaviour (`main.ts` is the entry, currently calling a demo `quote` module) and shared helpers (`view-transition`). Logic that belongs to one component stays in that component
+- `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`, `transitions`), ordered by cascade layers in `index.css`
 - `src/site.ts` — the site name, description and locale, shared by the page head and the feed
 - `public/` — favicons and `robots.txt`
 - `astro.config.mjs` — Astro config, including the sitemap

@@ -43,9 +43,17 @@
     # Superseded by `frame-ancestors` below in modern browsers; kept for older ones
     X-Frame-Options = "DENY"
 
-    # `'unsafe-inline'` is unavoidable here, not laziness: Astro inlines both the theme
-    # scripts and the stylesheet into the HTML, and this build ships zero external JS or CSS.
-    # Hashes would break on every edit to the theme code; nonces need a server, which static
-    # hosting doesn't provide. The remaining directives are still worth having — they block
-    # framing, base-tag hijacking, form exfiltration and plugin content.
+    # `'unsafe-inline'` is unavoidable here, not laziness: the theme script in BaseLayout's <head>
+    # is inline so it runs before first paint, and the cascade layer order statement has to stay an
+    # inline <style>. The main stylesheet and the bundled scripts are external files. Hashes
+    # would break on every edit to the theme code; nonces need a server, which static hosting
+    # doesn't provide. The remaining directives are still worth having — they block framing,
+    # base-tag hijacking, form exfiltration and plugin content.
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+# Astro puts a content hash in every file name under /_astro/, so a given URL never changes
+# its contents. That makes it safe to cache for a year: when the CSS or JS changes, so does the name.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -38,7 +38,8 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
       @layer reset, tokens, base, components, utilities, transitions;
     </style>
     {/* Runs before the render-blocking stylesheet so a stored choice never flashes the wrong scheme.
-        IIFE-wrapped because `is:inline` scripts share the global scope. */}
+        IIFE-wrapped because `is:inline` scripts share the global scope. It can't import anything, so the
+        'theme' storage key is written out here and again in ThemeToggle.astro: keep the two in step. */}
     <script is:inline>
       (() => {
         const stored = localStorage.getItem('theme');
@@ -81,5 +82,9 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
       </article>
     </main>
     <Footer />
+    {/* The site-wide browser script. Astro bundles it into an external file; see src/scripts/main.ts. */}
+    <script>
+      import '../scripts/main';
+    </script>
   </body>
 </html>

@@ -14,9 +14,9 @@ const posts = defineCollection({
     title: z.string(),
     date: z.date(),
     draft: z.boolean().optional(),
-    // Optional so existing posts keep building. Where absent, the page falls back to the
-    // site-wide description — correct, but identical across every post, so it's worth
-    // filling in per post over time.
+    // Optional so a post without one still builds. Where absent, the page falls back to the
+    // site-wide description — correct, but identical across every post, so it's worth filling
+    // in per post. Every current post has one.
     description: z.string().optional(),
     // When a post was last meaningfully changed. Optional: most posts never need it. Same format
     // as `date`, so it can be a bare day or carry a time. It's shown on the post page and used as

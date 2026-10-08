@@ -1,8 +1,8 @@
 ---
 title: "Fluid type and spacing with clamp()"
+description: "How a handful of clamp() values give the whole site a smoothly scaling type and spacing system, with no breakpoints."
 date: 2026-10-03T16:22:51Z
 draft: false
-description: "How a handful of clamp() values give the whole site a smoothly scaling type and spacing system, with no breakpoints."
 ---
 
 Text that's comfortable on a phone looks a bit lost on a big monitor, and text that suits a big monitor is shouting on a phone. The traditional fix is breakpoints: at this width, jump to that size. It works, but you end up with sizes that leap about, and a pile of media queries to look after.

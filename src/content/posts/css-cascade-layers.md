@@ -1,8 +1,9 @@
 ---
 title: "Taming the cascade with @layer"
-date: 2026-10-06T08:47:23Z
-draft: false
 description: "Splitting a single stylesheet into cascade layers, and the production build gotcha that only showed up after I'd shipped it."
+date: 2026-10-06T08:47:23Z
+updated: 2026-10-08T10:57:48Z
+draft: false
 ---
 
 This site is a playground, so every time I try something new on it I'm going to write it up. Partly as a reference for future me, and partly because explaining a thing is the quickest way to find out whether I actually understood it. 🤔
@@ -63,4 +64,4 @@ A browser without `@layer` support gets unstyled but readable HTML. I'm fine wit
 
 ## What's next
 
-There's a `transitions` layer declared at the end of that list, and it's empty for now. That's where page transitions will live, using the native View Transitions API. Dabbly dabbles to follow.
+There's a `transitions` layer declared at the end of that list. It was empty when I first wrote this, and it isn't any more: page transitions live there now, using the native View Transitions API. I wrote that up in [Page transitions with native view transitions](/posts/css-page-transitions).

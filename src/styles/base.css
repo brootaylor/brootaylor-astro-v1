@@ -19,6 +19,10 @@
   }
 
   body {
+    /* Caps the page at 80 characters wide, so lines of text stay a comfortable length on wide
+       screens. `ch` is the width of a "0" in the body font, so the cap follows the text size.
+       Box sizing is `border-box` (see reset.css), so the side padding below counts towards it. */
+    max-width: 80ch;
     /* At least a full screen tall, so the footer isn't left floating mid-page on short pages. */
     min-height: 100vh;
     /* Prioritise speed over fancy kerning/ligatures for body text. */

@@ -1,10 +1,18 @@
 ---
 title: "Helpful Linux commands"
+description: "A personal cheat sheet of the Linux commands I reach for most: listing, moving and finding files, searching, system info and processes."
 date: 2026-02-24T18:25:36.671Z
+updated: 2026-10-07T20:17:42Z
 draft: false
 ---
 
 A list of helpful Linux commands that I use regularly. This is more for my own reference, but hopefully it can be useful to others as well.
+
+I'm a web developer, not a sysadmin, so none of this is deep wizardry. It's the handful of commands I keep reaching for, and the handful I keep forgetting the flags for. Writing them down once beats searching for the same answer every few weeks.
+
+The sections run roughly in the order I'd use them: finding your way around, finding things, reading them, then poking at the system itself. Each command has a comment above it saying what it does, so you can skim for the one you need.
+
+A word of caution before you copy anything. Commands like `rm -r` delete without asking and without a bin to rescue things from, so read the path twice and be sure where you are before pressing enter.
 
 ## Listing files and directories
 

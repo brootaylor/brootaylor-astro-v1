@@ -70,9 +70,10 @@
      earliest layer (this one) beats an `!important` anywhere later. That's exactly what a
      "turn motion off" rule should do. It can't be undone by accident.
 
-     Heads up for the page transitions work: the `*` selectors below do not match view
-     transition pseudo-elements (`::view-transition-old(root)` etc.), so this rule does not
-     protect them. Those must be gated by `prefers-reduced-motion: no-preference` themselves. */
+     The `*` selectors below do not match view transition pseudo-elements
+     (`::view-transition-old(root)` etc.), so this rule does not protect them. That is why
+     transitions.css and the theme toggle's `withViewTransition()` gate themselves on
+     `prefers-reduced-motion: no-preference`. */
   @media (prefers-reduced-motion: reduce) {
     html:focus-within {
       scroll-behavior: auto;

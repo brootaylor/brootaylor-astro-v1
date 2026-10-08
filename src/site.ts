@@ -1,5 +1,5 @@
 // Site-wide identity strings. One home for values that otherwise get copied into the layout,
-// the feed and any future sitemap — the name had already drifted between two of those once.
+// and the feed — the name had already drifted between those two once.
 // The canonical URL itself is not here: it lives in `site` in astro.config.mjs, which is the
 // only place Astro reads it from.
 

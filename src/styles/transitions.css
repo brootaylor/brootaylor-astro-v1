@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Page transitions
+   ==========================================================================
+   Native View Transitions: the browser snapshots the old page and the new one, then animates
+   between the two. No router, no library, no JavaScript for page-to-page navigation.
+
+   Progressive enhancement
+   A browser that doesn't support cross-document view transitions ignores the `@view-transition`
+   at-rule and the pseudo-elements below, and just navigates instantly as it always has. Nothing
+   here needs an `@supports` guard, because there is nothing to break.
+
+   Why the reduced-motion media query wraps everything
+   The `prefers-reduced-motion: reduce` rule in reset.css matches `*`, and `*` does not match
+   `::view-transition-*` pseudo-elements, so it can't switch these animations off. Gating them
+   here, on `no-preference`, means a person who has asked for less motion gets a plain, instant
+   navigation instead.
+   ========================================================================== */
+
+@layer transitions {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Opt every same-origin navigation in. Both the page being left and the page being arrived
+       at need this rule, which they get because every page uses BaseLayout and this stylesheet. */
+    @view-transition {
+      navigation: auto;
+    }
+
+    :root {
+      /* How long the page cross-fade takes. One place to tune it. */
+      --transition-duration: 0.2s;
+    }
+
+    /* The header and footer are the same on every page, so they get their own names. A named
+       element is lifted out of the page snapshot and animated separately: because it looks
+       identical before and after, it simply stays put while the content between them fades. */
+    header {
+      view-transition-name: site-header;
+    }
+
+    footer {
+      view-transition-name: site-footer;
+    }
+
+    /* The cross-fade for everything else (the `root` snapshot). The browser's default fade is
+       0.25s; this just sets our own length on the outgoing and incoming halves. */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: var(--transition-duration);
+    }
+  }
+}

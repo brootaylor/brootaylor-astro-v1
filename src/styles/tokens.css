@@ -25,8 +25,9 @@
        and the manual override further down. Never add a separate dark palette or a
        `prefers-color-scheme` block; add a pair here instead.
 
-       Neither end of the scale is pure black or white: slightly-off values avoid "halation"
-       (glowing text) on OLED screens. */
+       In dark mode neither the background nor the text is pure black or white: slightly-off
+       values avoid "halation" (glowing text) on OLED screens. Light mode does use pure white
+       and pure black. */
     --color-bg: light-dark(oklch(1 0 0), oklch(0.2 0 0));
     --color-body: light-dark(oklch(0 0 0), oklch(0.91 0 0));
     --color-link: light-dark(oklch(0.45 0.313 264), oklch(0.77 0.122 254));

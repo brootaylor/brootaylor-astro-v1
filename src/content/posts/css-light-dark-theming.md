@@ -1,9 +1,9 @@
 ---
 title: "Light and dark theming with light-dark()"
-date: 2026-09-28T10:08:36Z
-updated: 2026-10-07T17:30:56Z
-draft: false
 description: "One colour declaration that covers OS light, OS dark and a manual toggle, with no JavaScript needed for the baseline."
+date: 2026-09-28T10:08:36Z
+updated: 2026-10-08T10:57:48Z
+draft: false
 ---
 
 I wanted dark mode on this site, but without keeping a second palette in sync and without the whole thing depending on JavaScript. CSS has had a neat answer to this for a while now: `light-dark()`.
@@ -34,9 +34,11 @@ Each colour token is a `light-dark()` pair: first value for light, second for da
 --color-link: light-dark(oklch(0.45 0.313 264), oklch(0.77 0.122 254));
 ```
 
+They're `oklch()` colours rather than hex or `hsl()`. Its lightness value is designed to track how light a colour looks to the eye, which makes it easier to tune the light and dark halves of a pair against each other.
+
 The browser picks whichever side matches the computed `color-scheme`. So there's no `prefers-color-scheme` media query and no second set of dark variables to forget to update. Adding a new colour means adding one pair. That's it.
 
-Neither end of the scale is pure black or white, by the way. Slightly off values avoid that glowing text effect ("halation") you get on OLED screens.
+In dark mode, neither the background nor the text is pure black or white, by the way. Slightly off values avoid that glowing text effect ("halation") you get on OLED screens. Light mode does use pure white and pure black.
 
 ---
 
@@ -55,6 +57,8 @@ I also wanted a toggle, so a visitor can pick Light, Dark or System regardless o
 ```
 
 The toggle just sets a `data-theme` attribute on `<html>`. With no attribute, the `light dark` value stands and the OS is followed natively. Three modes, no colour value written twice. That was a nice surprise.
+
+Switching also cross-fades in browsers that support view transitions, which I wrote about in [Page transitions with native view transitions](/posts/css-page-transitions).
 
 ---
 
