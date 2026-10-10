@@ -1,22 +1,42 @@
 ---
+import SkipLink from '../components/SkipLink.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 import { siteName, siteDescription, siteLang, siteLocale, ownerFirstName, ownerLastName } from '../site';
+import { toDateTime } from '../utils/date';
 
 // The one place global CSS is pulled in. index.css imports the partials (reset, tokens, base,
 // utilities, transitions) — see the comments there for how it all fits. The layer order itself
 // is declared in the <head> below.
 import '../styles/index.css';
 
-// `ogType` is the Open Graph type: how a page is described when it's shared. "website" by
-// default, "article" for a post, and "profile" for the homepage and the About page, which are
-// about a person.
-// It's the one Open Graph field that genuinely differs per page type; a "profile" page also gets
-// the person's name (see the <head> below). `noindex` keeps a page out of search results; only
-// the offline page uses it.
+// The Open Graph type (https://ogp.me/#types): how a page is described when it's shared. Each
+// type has its own extra properties, so the type and the data it needs travel together in one
+// `og` prop, and the <head> below renders one block per type. "website" is the default and has
+// no extra properties. "profile" (the homepage and the About page, which are about a person) takes
+// its name from src/site.ts, so it needs no data either. "article" (every post, via PostsLayout)
+// carries its dates.
 //
-// `article` decides the page's document structure, and is separate from `ogType` on purpose:
+// To support a new type: add its shape to this union, then a block for its properties in the
+// <head>, after the "article" one. ogp.me lists each type's properties; all are optional there.
+type OpenGraph =
+  | { type: 'website' }
+  | { type: 'profile' }
+  | { type: 'article'; publishedTime: Date; modifiedTime?: Date };
+
+interface Props {
+  title?: string;
+  description?: string;
+  og?: OpenGraph;
+  noindex?: boolean;
+  article?: boolean;
+}
+
+// `noindex` keeps a page out of search results; only the offline page uses it. Every other page
+// gets an explicit "index, follow".
+//
+// `article` decides the page's document structure, and is separate from `og` on purpose:
 // one is how a page is described when shared, the other is what its markup means. Set it on
 // any page whose content is a self-contained piece that would make sense on its own (a post
 // does; a listing or a status page doesn't). Off by default, so a page is a plain page unless it
@@ -46,7 +66,7 @@ import '../styles/index.css';
 const {
   title = siteName,
   description = siteDescription,
-  ogType = 'website',
+  og = { type: 'website' },
   noindex = false,
   article = false,
 } = Astro.props;
@@ -59,10 +79,14 @@ const pageTitle = title === siteName ? siteName : `${title} — ${siteName}`;
 // Absolute URL of the page being rendered, for the canonical link and og:url. Both must be
 // absolute, and `Astro.site` is what makes that possible.
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+
+// An article's `article:author` is a URL, not a name: it points at a "profile" page, which is
+// what the About page is. If that page ever moves, update this.
+const authorUrl = new URL('/about/', Astro.site);
 ---
 
 <!doctype html>
-<html lang={siteLang}>
+<html id="start" lang={siteLang} dir="ltr">
   <!--
       "Here is the world. Beautiful and terrible things will happen. Don't be afraid."
 
@@ -72,8 +96,15 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
+    <title>{pageTitle}</title>
+    <meta name="description" content={description}>
+    {/* Every page states its robots directive outright. "index, follow" is what a crawler assumes
+        when the tag is absent, so on an indexed page it changes nothing; it's there to make the
+        intent explicit. A `noindex` page (only the offline page) is kept out of search results. */}
+    <meta name="robots" content={noindex ? 'noindex' : 'index, follow'}>
+
     {/* The cascade layer order for the whole site: later layers beat earlier ones, regardless of
-        specificity. It has to be an inline <style> first in the <head>, not a line in
+        specificity. It has to be an inline <style> ahead of the stylesheet, not a line in
         src/styles/index.css. Layers rank by where they're first seen, and the build's CSS
         minifier merges and reorders the bundled styles (components ended up first, which put
         them below the reset), discarding the ordering statement in the process. An inline style
@@ -93,46 +124,60 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         }
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" href="/favicon.ico">
-    {/* Feed autodiscovery — how a reader finds /rss.xml from any page on the site. */}
-    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml">
 
-    <title>{pageTitle}</title>
-    <meta name="description" content={description}>
-    {noindex && <meta name="robots" content="noindex">}
     {/* Names one URL as authoritative, so a page reached via a deploy preview, a trailing-slash
         variant or a query string doesn't get indexed as a separate copy. */}
     <link rel="canonical" href={canonicalUrl}>
+    {/* Feed autodiscovery — how a reader finds /rss.xml from any page on the site. */}
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml">
 
     {/* Open Graph — how the page renders when pasted into a chat app or social post.
         No og:image yet: nothing in public/ is suitable, so shares fall back to a text-only
-        card. Adding one image here would upgrade every page at once. */}
-    <meta property="og:type" content={ogType}>
+        card. Adding one image here (after og:url) would upgrade every page at once. */}
+    <meta property="og:type" content={og.type}>
+    <meta property="og:site_name" content={siteName}>
     <meta property="og:title" content={pageTitle}>
     <meta property="og:description" content={description}>
     <meta property="og:url" content={canonicalUrl}>
-    <meta property="og:site_name" content={siteName}>
     <meta property="og:locale" content={siteLocale}>
     {/* The `profile` type's own properties (https://ogp.me/#type_profile), all optional there.
         Only the name is given: the spec's `username` and `gender` are left out. */}
-    {ogType === 'profile' && (
+    {og.type === 'profile' && (
       <>
         <meta property="profile:first_name" content={ownerFirstName}>
         <meta property="profile:last_name" content={ownerLastName}>
+      </>
+    )}
+    {/* The `article` type's own properties (https://ogp.me/#type_article). The times use the same
+        ISO 8601 form as the post's <time datetime>. `section` and `tag` are left out: posts have
+        no frontmatter for them. */}
+    {og.type === 'article' && (
+      <>
+        <meta property="article:published_time" content={toDateTime(og.publishedTime)}>
+        {og.modifiedTime && <meta property="article:modified_time" content={toDateTime(og.modifiedTime)}>}
+        <meta property="article:author" content={authorUrl}>
       </>
     )}
 
     {/* `summary` rather than `summary_large_image`, which would reserve space for an image
         that isn't being supplied. Revisit alongside og:image. */}
     <meta name="twitter:card" content="summary">
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" href="/favicon.ico">
+    {/* Astro adds the bundled stylesheet's <link> itself, after everything above, just before
+        </head>. Its position isn't configurable; the layer order and theme script above still
+        come ahead of it, which is all they need. */}
   </head>
   <body>
+    {/* First in <body> so it's the first thing a keyboard user reaches; it jumps to <main id="main">
+        below. See SkipLink.astro. */}
+    <SkipLink />
     <Header />
     {/* The <h1> is rendered here, from `title`, so page and post bodies start at <h2>. Which
         wrapper it sits in depends on the `article` prop (see the frontmatter above). */}
     {article ? (
-      <main>
+      <main id="main">
         {/* An article: a self-contained piece inside <main>. Its title, and anything passed in
             the `meta` slot (a post's dates, say), go in the article's own <header>, the element
             for an article's introductory content. That <header> is not the site header: it
@@ -149,7 +194,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     ) : (
       /* A plain page: the content is the page itself, so it sits directly in <main>, with no
          extra wrapper. Anything passed in the `meta` slot is ignored here. */
-      <main class="flow">
+      <main id="main" class="flow">
         <h1>{title}</h1>
         <slot />
       </main>

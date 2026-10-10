@@ -5,9 +5,10 @@ const title = "Hi, I'm Bruce.";
 ---
 
 {/* An article rather than a plain page: the introduction is a self-contained piece that would
-    make sense on its own. `article` gives it the <article> structure, and `ogType="profile"`
-    describes it as a page about a person when it's shared. See BaseLayout.astro for both. */}
-<BaseLayout title={title} ogType="profile" article>
+    make sense on its own. `article` gives it the <article> structure, and the Open Graph
+    type "profile" describes it as a page about a person when it's shared. See BaseLayout.astro
+    for both. */}
+<BaseLayout title={title} og={{ type: 'profile' }} article>
   <p>A web developer, ui engineer, drummer, and wannabe pilot living in the south east of England.</p>
   <p>I try my best to build web solutions that are <a href="https://resilientwebdesign.com/">resilient</a>, <a href="https://trentwalton.com/2014/03/10/device-agnostic/">usable</a> and as future-friendly as possible. For this reason I prefer a vanilla approach and tend to be fairly tech-agnostic.</p>
   <h2>What's this website about?</h2>

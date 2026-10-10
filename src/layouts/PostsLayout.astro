@@ -9,10 +9,16 @@ const { frontmatter } = Astro.props;
 ---
 
 {/* Every post is an article, in both senses: `article` makes BaseLayout wrap it in an <article>
-    with the <h1> in the article's own <header>, and `ogType="article"` describes it as one when
-    shared. The dates go in the `meta` slot, so they land in that header beneath the <h1>.
+    with the <h1> in the article's own <header>, and the Open Graph type "article" describes it as
+    one when shared, carrying the same dates as `article:published_time` and `article:modified_time`.
+    The dates also go in the `meta` slot, so they land in that header beneath the <h1>.
     `description` is optional in the schema — omitting it lets BaseLayout apply the site default. */}
-<BaseLayout title={frontmatter.title} description={frontmatter.description} ogType="article" article>
+<BaseLayout
+  title={frontmatter.title}
+  description={frontmatter.description}
+  og={{ type: 'article', publishedTime: frontmatter.date, modifiedTime: frontmatter.updated }}
+  article
+>
   {/* The published and updated times are inline siblings inside one <small>, so they read as a
       single line of metadata and need no wrapper paragraph. The "Published:" label is visually
       hidden (the date alone is obvious to a sighted reader, but a screen reader benefits from it),
