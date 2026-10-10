@@ -42,7 +42,7 @@ This is the bit I'd have missed if I'd stopped at "it works on my machine".
 
 **The minifier ate my layer order.** I'd put that `@layer` order statement at the top of `index.css`, where it felt like it belonged. In dev, everything looked right. In a production build, the minifier merged and reordered the bundled styles and dropped the statement entirely. Layers then get ranked by whichever one the browser sees first, and my components ended up *below* the reset.
 
-Dev doesn't minify, so I'd never have spotted it by looking at the dev server. I only caught it by inspecting the built HTML. The fix is an inline style, first thing in the `<head>`, which can't be reordered:
+Dev doesn't minify, so I'd never have spotted it by looking at the dev server. I only caught it by inspecting the built HTML. The fix is an inline style in the `<head>`, ahead of the stylesheet, which can't be reordered:
 
 ```html
 <style is:inline>

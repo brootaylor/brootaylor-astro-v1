@@ -55,14 +55,14 @@ draft: true
 
 - `src/pages/` — routes, including the posts listing and detail pages, the RSS endpoint and the offline page
 - `src/layouts/` — `BaseLayout` (page shell) and `PostsLayout` (post-specific wrapper)
-- `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`
+- `src/components/` — `SkipLink`, `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
 - `src/utils/` — build-time helpers (`date`, `posts`), plus `sitemap-lastmod.ts`, which only the Astro config uses
 - `src/scripts/` — browser-only TypeScript for site-wide behaviour (`main.ts` is the entry, currently calling a demo `quote` module) and shared helpers (`view-transition`). Logic that belongs to one component stays in that component
 - `src/service-worker/` — the service worker template, `sw.js`
 - `src/integrations/` — `service-worker.ts`, a build-time Astro integration that fills in that template and writes `dist/sw.js`
 - `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`, `transitions`), pulled together by `index.css` and ordered by cascade layers declared in `BaseLayout`'s `<head>`
-- `src/site.ts` — the site name, description and locale, shared by the page head and the feed
+- `src/site.ts` — the site name, description, language, locale and owner's name, shared by the page head and the feed
 - `public/` — favicons and `robots.txt`
 - `astro.config.mjs` — Astro config, including the sitemap and the service worker integration
 - `netlify.toml` — build settings, redirects, security and caching headers
