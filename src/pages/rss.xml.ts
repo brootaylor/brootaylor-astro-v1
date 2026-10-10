@@ -11,15 +11,23 @@ import { render } from 'astro:content';
 // at the changelog on upgrade.
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 
-// Shared with the listing page so the draft filter and sort order can't drift apart.
+// Shared with the listing and post pages so the draft filter and sort order can't drift apart.
 import { getPublishedPosts } from '../utils/posts';
 
 // Shared with BaseLayout so the feed and the pages can't disagree on what the site is called.
-import { siteName, siteDescription } from '../site';
+import { siteName, siteDescription, siteLang } from '../site';
+
+// Posts link to each other root-relatively (`/posts/…/`), which works on the site but not in a
+// feed reader: it has no page to resolve the path against. This makes every root-relative `href`
+// and `src` absolute. Protocol-relative URLs (`//host/…`) are left alone.
+const absolutise = (html: string, origin: string) =>
+  html.replace(/\b(href|src)="\/(?!\/)/g, `$1="${origin}/`);
 
 export async function GET(context: APIContext) {
   const posts = await getPublishedPosts();
   const container = await AstroContainer.create();
+  // `context.site` comes from `site` in astro.config.mjs.
+  const site = context.site!;
 
   const items = await Promise.all(
     posts.map(async (post) => {
@@ -31,7 +39,7 @@ export async function GET(context: APIContext) {
         // Trailing slash to match the directory that static output actually writes, so feed
         // readers and the site agree on a post's identity.
         link: `/posts/${post.id}/`,
-        content: await container.renderToString(Content),
+        content: absolutise(await container.renderToString(Content), site.origin),
       };
     })
   );
@@ -39,10 +47,9 @@ export async function GET(context: APIContext) {
   return rss({
     title: siteName,
     description: siteDescription,
-    // `context.site` comes from `site` in astro.config.mjs, which is what makes the relative
-    // `link` values above resolve to absolute URLs.
-    site: context.site!,
+    // What makes the relative `link` values above resolve to absolute URLs.
+    site,
     items,
-    customData: '<language>en-gb</language>',
+    customData: `<language>${siteLang}</language>`,
   });
 }

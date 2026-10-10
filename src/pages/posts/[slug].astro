@@ -1,29 +1,24 @@
 ---
-// This page is responsible for rendering individual blog posts based on their slug. It uses `getStaticPaths` to fetch the posts collection and generate paths for each post, and then renders the content of the post using a layout component.
-import PostsLayout from "../../layouts/PostsLayout.astro";
-// Importing a utility function to convert post IDs to slugs for URL generation.
-import { toSlug } from "../../utils/slug";
-
-import { render } from "astro:content";
+// One page per published post, at /posts/<id>/.
+import { render } from 'astro:content';
+import PostsLayout from '../../layouts/PostsLayout.astro';
 
 // The same published-posts helper the listing and the feed use. Drafts get no page built at all,
 // so a draft can't be listed, syndicated, indexed or reached by guessing its URL — one rule
 // everywhere rather than three surfaces each remembering to filter. Preview drafts with `npm run dev`.
-import { getPublishedPosts } from "../../utils/posts";
+import { getPublishedPosts } from '../../utils/posts';
 
-// `getStaticPaths` is now an async function that fetches the posts collection and returns an array of paths with props.
+// `post.id` is already URL-ready: the glob loader strips the file extension and slugifies the
+// filename (or uses a `slug` from frontmatter). The listing and the feed link with it too.
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
   return posts.map((post) => ({
-    params: { slug: toSlug(post.id) }, // Using the `toSlug` function to convert the post ID to a slug for the URL
+    params: { slug: post.id },
     props: { post },
   }));
 }
 
-// The main component of the page receives the `post` as a prop, which is passed from `getStaticPaths`.
 const { post } = Astro.props;
-
-// `render()` is used to render the content of the post, and we destructure `Content` from the result to use in our layout.
 const { Content } = await render(post);
 ---
 

@@ -1,20 +1,59 @@
 ---
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
-import { siteName, siteDescription, siteLocale } from "../site";
+import { siteName, siteDescription, siteLang, siteLocale, ownerFirstName, ownerLastName } from '../site';
 
-// The one place global CSS is pulled in. index.css declares the cascade layer order and imports
-// the partials (reset, tokens, base, utilities) — see the comments there for how it all fits.
-import "../styles/index.css";
+// The one place global CSS is pulled in. index.css imports the partials (reset, tokens, base,
+// utilities, transitions) — see the comments there for how it all fits. The layer order itself
+// is declared in the <head> below.
+import '../styles/index.css';
 
-// `ogType` is "article" for a post and "website" for everything else — the one Open Graph field
-// that genuinely differs per page type. `noindex` keeps a page out of search results; only the
-// offline page uses it.
-const { title = siteName, description = siteDescription, ogType = "website", noindex = false } = Astro.props;
+// `ogType` is the Open Graph type: how a page is described when it's shared. "website" by
+// default, "article" for a post, and "profile" for the homepage and the About page, which are
+// about a person.
+// It's the one Open Graph field that genuinely differs per page type; a "profile" page also gets
+// the person's name (see the <head> below). `noindex` keeps a page out of search results; only
+// the offline page uses it.
+//
+// `article` decides the page's document structure, and is separate from `ogType` on purpose:
+// one is how a page is described when shared, the other is what its markup means. Set it on
+// any page whose content is a self-contained piece that would make sense on its own (a post
+// does; a listing or a status page doesn't). Off by default, so a page is a plain page unless it
+// says otherwise. PostsLayout sets it for every post; any other page can opt in the same way.
+//
+// To make a page an article, add `article` to its <BaseLayout> (shorthand for `article={true}`,
+// like `noindex`). Anything given `slot="meta"` goes in the article's <header>, under the <h1>;
+// leave it out and the header holds just the <h1>. src/pages/index.astro and src/pages/about.astro
+// are working examples:
+//
+//   <BaseLayout title={title} article>
+//     <p slot="meta">Optional: shown in the article's header, under the title.</p>
+//     <p>The body of the page…</p>
+//   </BaseLayout>
+//
+// renders as:
+//
+//   <main>
+//     <article class="flow">
+//       <header class="flow"><h1>…</h1> <p>Optional: …</p></header>
+//       <p>The body of the page…</p>
+//     </article>
+//   </main>
+//
+// Without `article`, the same page renders as <main class="flow"><h1>…</h1> <p>…</p></main>, and
+// anything in `slot="meta"` is dropped.
+const {
+  title = siteName,
+  description = siteDescription,
+  ogType = 'website',
+  noindex = false,
+  article = false,
+} = Astro.props;
 
-// Subpages read "<page> — <site>" so a browser tab or a shared link carries both. The homepage
-// passes the site name itself, so guard against rendering it twice.
+// Pages read "<page> — <site>" so a browser tab or a shared link carries both. Every page passes
+// its own title today; a page that passes none falls back to the site name, and this guard stops
+// it rendering twice.
 const pageTitle = title === siteName ? siteName : `${title} — ${siteName}`;
 
 // Absolute URL of the page being rendered, for the canonical link and og:url. Both must be
@@ -23,7 +62,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en-gb">
+<html lang={siteLang}>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,7 +89,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-		<link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.ico">
     {/* Feed autodiscovery — how a reader finds /rss.xml from any page on the site. */}
     <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml">
 
@@ -70,6 +109,14 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonicalUrl}>
     <meta property="og:site_name" content={siteName}>
     <meta property="og:locale" content={siteLocale}>
+    {/* The `profile` type's own properties (https://ogp.me/#type_profile), all optional there.
+        Only the name is given: the spec's `username` and `gender` are left out. */}
+    {ogType === 'profile' && (
+      <>
+        <meta property="profile:first_name" content={ownerFirstName}>
+        <meta property="profile:last_name" content={ownerLastName}>
+      </>
+    )}
 
     {/* `summary` rather than `summary_large_image`, which would reserve space for an image
         that isn't being supplied. Revisit alongside og:image. */}
@@ -77,12 +124,31 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <Header />
-    <main>
-      <article class="flow">
+    {/* The <h1> is rendered here, from `title`, so page and post bodies start at <h2>. Which
+        wrapper it sits in depends on the `article` prop (see the frontmatter above). */}
+    {article ? (
+      <main>
+        {/* An article: a self-contained piece inside <main>. Its title, and anything passed in
+            the `meta` slot (a post's dates, say), go in the article's own <header>, the element
+            for an article's introductory content. That <header> is not the site header: it
+            belongs to the article, so it isn't a banner landmark. `.flow` on the article spaces
+            the header and the body; `.flow` on the header spaces the title and the meta. */}
+        <article class="flow">
+          <header class="flow">
+            <h1>{title}</h1>
+            <slot name="meta" />
+          </header>
+          <slot />
+        </article>
+      </main>
+    ) : (
+      /* A plain page: the content is the page itself, so it sits directly in <main>, with no
+         extra wrapper. Anything passed in the `meta` slot is ignored here. */
+      <main class="flow">
         <h1>{title}</h1>
         <slot />
-      </article>
-    </main>
+      </main>
+    )}
     <Footer />
     {/* The site-wide browser script. Astro bundles it into an external file; see src/scripts/main.ts. */}
     <script>

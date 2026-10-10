@@ -2,7 +2,7 @@
 title: "How this Astro site is put together"
 description: "A tour of the config and architecture behind this site: a tiny Astro config, content collections, layouts, a feed, a sitemap and a build that ships no third party code."
 date: 2026-09-14T20:41:08
-updated: 2026-10-08T23:16:48
+updated: 2026-10-10T16:21:34
 draft: false
 ---
 
@@ -23,16 +23,16 @@ There are three runtime dependencies: `astro`, `@astrojs/rss` and `@astrojs/site
 `astro.config.mjs` is still short. Here it is with the comments and the filename-handling function trimmed out:
 
 ```js
-import { defineConfig } from "astro/config";
-import sitemap from "@astrojs/sitemap";
-import { addPostLastmod } from "./src/utils/sitemap-lastmod.ts";
-import { serviceWorker } from "./src/integrations/service-worker.ts";
+import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+import { addPostLastmod } from './src/utils/sitemap-lastmod.ts';
+import { serviceWorker } from './src/integrations/service-worker.ts';
 
 export default defineConfig({
-  site: "https://playground.brootaylor.com",
+  site: 'https://playground.brootaylor.com',
 
   build: {
-    inlineStylesheets: "never",
+    inlineStylesheets: 'never',
   },
 
   vite: {
@@ -60,7 +60,7 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      filter: (page) => !page.endsWith("/rss.xml") && !page.endsWith("/offline/"),
+      filter: (page) => !page.endsWith('/rss.xml') && !page.endsWith('/offline/'),
       serialize: addPostLastmod,
     }),
     serviceWorker(),
@@ -74,13 +74,13 @@ export default defineConfig({
 
 These settings are there because I'd rather the site's CSS and JavaScript lived in external files than be scattered through the HTML. Each one does a specific job:
 
-- **`inlineStylesheets: "never"`.** By default Astro inlines a stylesheet into every page while it's under about 4 kB, and links to a file once it's bigger. That means the way the site ships its CSS can flip the moment the stylesheet grows, which is exactly what happened when I added page transitions. I'd rather have an external file anyway, since the CSS will keep growing and a hashed file is cached once and reused on every page. So I made it an explicit choice.
+- **`inlineStylesheets: 'never'`.** By default Astro inlines a stylesheet into every page while it's under about 4 kB, and links to a file once it's bigger. That means the way the site ships its CSS can flip the moment the stylesheet grows, which is exactly what happened when I added page transitions. I'd rather have an external file anyway, since the CSS will keep growing and a hashed file is cached once and reused on every page. So I made it an explicit choice.
 - **`cssCodeSplit: false`.** Out of the box the build also splits out a small extra file for each page's own styles. Mine were around 95 bytes each, which isn't worth a second request. Turning splitting off merges everything into one file, so every page makes a single CSS request.
 - **`assetsInlineLimit: 0`.** The same size-based inlining applies to bundled scripts, so a small script would be inlined into every page until it grew past about 4 kB. Setting the limit to zero keeps them external from the start. It doesn't touch the small theme script in the `<head>`, which is marked inline on purpose.
 - **`entryFileNames`.** Astro names a script after the component that holds it, so the theme toggle's script would be called something like `ThemeToggle.astro_astro_type_script_index_0_lang.<hash>.js`. This function trims it to `ThemeToggle.<hash>.js`. It also names the site-wide script, `src/scripts/main.ts`, as `main`.
 - **`assetFileNames`.** The merged file is called `style` by default. I wanted `main`, to match the script, and there's no simple setting for that, so this function sets it. It replaces Astro's own file naming, so it also has to repeat the plain pattern for everything else. It matches on Vite's default name, so a future Vite change would quietly revert the file to `style`. Nothing would break, but it's worth knowing.
 
-One thing stays inline on purpose: the line that declares the cascade layer order. The production build drops it from the external file, so it has to sit in the `<head>` as an inline style (the [cascade layers post](/posts/css-cascade-layers) has the full story).
+One thing stays inline on purpose: the line that declares the cascade layer order. The production build drops it from the external file, so it has to sit in the `<head>` as an inline style (the [cascade layers post](/posts/css-cascade-layers/) has the full story).
 
 ---
 
@@ -114,7 +114,7 @@ The RSS feed is a static endpoint that carries full post content, not just title
 
 The sitemap integration writes `sitemap-index.xml` and `sitemap-0.xml`. The index filename isn't configurable, so a Netlify redirect covers `/sitemap.xml` for any crawler that guesses it, and `robots.txt` points at the real file with an absolute URL.
 
-Posts also get a `<lastmod>`, which is their `updated` date, or their `date` if they've never been updated. Other pages don't get one, on purpose: a date that changes on every deploy would teach crawlers to ignore the field. The config can't read the content collection, so that bit of code reads the frontmatter itself. It's the one place the "updated, else date" rule is written down twice.
+Posts also get a `<lastmod>`, which is their `updated` date, or their `date` if they've never been updated. Other pages don't get one, on purpose: a date that changes on every deploy would teach crawlers to ignore the field. The config can't read the content collection, so that bit of code reads the frontmatter itself. That means it has to read dates exactly the way the content schema does, London time and all, so it's the one place that logic is written down twice.
 
 ---
 
@@ -132,10 +132,10 @@ Because those hashed files never change, they're kept across deploys and only do
 
 The CSS is plain native CSS, split into partials and ordered with cascade layers. Colours are `light-dark()` pairs written in `oklch()` that follow the OS with no JavaScript, with a theme toggle layered on top as an enhancement. Type and spacing scale fluidly with `clamp()`, and moving between pages fades with native view transitions. Each of those has its own post:
 
-- [Light and dark theming with light-dark()](/posts/css-light-dark-theming)
-- [Fluid type and spacing with clamp()](/posts/css-clamp-fluid-type)
-- [Taming the cascade with @layer](/posts/css-cascade-layers)
-- [Page transitions with native view transitions](/posts/css-page-transitions)
+- [Light and dark theming with light-dark()](/posts/css-light-dark-theming/)
+- [Fluid type and spacing with clamp()](/posts/css-clamp-fluid-type/)
+- [Taming the cascade with @layer](/posts/css-cascade-layers/)
+- [Page transitions with native view transitions](/posts/css-page-transitions/)
 
 ---
 

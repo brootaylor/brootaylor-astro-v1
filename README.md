@@ -55,13 +55,13 @@ draft: true
 
 - `src/pages/` — routes, including the posts listing and detail pages, the RSS endpoint and the offline page
 - `src/layouts/` — `BaseLayout` (page shell) and `PostsLayout` (post-specific wrapper)
-- `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`, `Link`
+- `src/components/` — `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`
-- `src/utils/` — shared helpers (`date`, `slug`, `posts`), plus `sitemap-lastmod.ts`, which only the Astro config uses
+- `src/utils/` — build-time helpers (`date`, `posts`), plus `sitemap-lastmod.ts`, which only the Astro config uses
 - `src/scripts/` — browser-only TypeScript for site-wide behaviour (`main.ts` is the entry, currently calling a demo `quote` module) and shared helpers (`view-transition`). Logic that belongs to one component stays in that component
 - `src/service-worker/` — the service worker template, `sw.js`
 - `src/integrations/` — `service-worker.ts`, a build-time Astro integration that fills in that template and writes `dist/sw.js`
-- `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`, `transitions`), ordered by cascade layers in `index.css`
+- `src/styles/` — global CSS as native partials (`reset`, `tokens`, `base`, `utilities`, `transitions`), pulled together by `index.css` and ordered by cascade layers declared in `BaseLayout`'s `<head>`
 - `src/site.ts` — the site name, description and locale, shared by the page head and the feed
 - `public/` — favicons and `robots.txt`
 - `astro.config.mjs` — Astro config, including the sitemap and the service worker integration
@@ -70,6 +70,10 @@ draft: true
 ## Deployment
 
 Deployed to Netlify. `netlify.toml` is the source of truth for build settings and overrides the Netlify UI. To run the site locally with its redirects and headers applied, use `npx netlify dev`.
+
+## Licence
+
+The source code is MIT licensed (see `LICENSE`). The site's written content isn't covered by that licence: the posts in `src/content/posts/` and the text of every page are © Bruce Taylor, all rights reserved.
 
 ---
 

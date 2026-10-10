@@ -1,9 +1,12 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = "About";
+const title = 'About';
 ---
 
-<BaseLayout title={title}>
+{/* An article rather than a plain page: the about text is a self-contained piece that would
+    make sense on its own. `article` gives it the <article> structure, and `ogType="profile"`
+    describes it as a page about a person when it's shared. See BaseLayout.astro for both. */}
+<BaseLayout title={title} ogType="profile" article>
   <p>I'm originally from South Africa and grew up on a dairy farm in a very <a href="https://youtu.be/bGQbM3QfA5w">beautiful part of the country</a>. I now live in the south east of England with my family and build websites for a living.</p>
 </BaseLayout>

@@ -1,10 +1,10 @@
 {
   "private": true,
   "type": "module",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "name": "brootaylor-astro-v1",
   "version": "1.0.0",
-  "description": "A version of my website using the Astro web framework.",
+  "description": "An experimental playground for web development ideas, techniques, features, demos and learnings, using the Astro web framework as the platform.",
   "keywords": [
     "personal-website",
     "blog"
@@ -36,7 +36,6 @@
   },
   "allowScripts": {
     "esbuild@0.28.1": true,
-    "esbuild@0.28.2": true,
     "sharp": false,
     "fsevents": false,
     "unix-dgram": false,

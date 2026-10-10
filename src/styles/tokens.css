@@ -39,8 +39,11 @@
     /* Fluid type scale. Each step is a `clamp(min, preferred, max)`: the size grows smoothly
        with the viewport between a small-screen value and a large-screen value, with no
        breakpoints. The comment on each step gives the range in px (small viewport → large
-       viewport). Step 0 is the base body size. The preferred values are interpolated, so
-       recalculate them as a set with a fluid-scale tool rather than nudging single numbers. */
+       viewport). Step 0 is the base body size. The scale runs between a 360px and a 1240px
+       viewport, with a ratio of 1.2 between steps at the small end and 1.25 at the large end;
+       below 360px every step sits at its minimum, above 1240px at its maximum. The preferred
+       values are interpolated, so recalculate them as a set with a fluid-scale tool (Utopia)
+       rather than nudging single numbers. */
     /* Step -2: 12.5px → 12.8px */
     --fluid-type--2: clamp(0.7813rem, 0.7736rem + 0.0341vw, 0.8rem);
     /* Step -1: 15px → 16px */
@@ -60,7 +63,7 @@
 
     /* Fluid spacing scale. Same idea as the type scale. The names read "small-viewport size →
        large-viewport size", e.g. `s-2xl` grows from the "s" step to the "2xl" step. Pairs let
-       a gap loosen up on big screens without media queries. */
+       a gap loosen up on big screens without media queries. Same 360px → 1240px viewport range. */
     /* Space xs-s: 14px → 20px */
     --fluid-space-xs-s: clamp(0.875rem, 0.7216rem + 0.6818vw, 1.25rem);
     /* Space s-m: 18px → 30px */

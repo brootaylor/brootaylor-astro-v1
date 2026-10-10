@@ -31,12 +31,16 @@
 
     /* The header and footer are the same on every page, so they get their own names. A named
        element is lifted out of the page snapshot and animated separately: because it looks
-       identical before and after, it simply stays put while the content between them fades. */
-    header {
+       identical before and after, it simply stays put while the content between them fades.
+
+       `body >` picks out the site's own header and footer only. A post has a <header> of its own
+       inside its <article>, and a name has to be unique on the page: if two elements share one,
+       the browser skips the whole transition. */
+    body > header {
       view-transition-name: site-header;
     }
 
-    footer {
+    body > footer {
       view-transition-name: site-footer;
     }
 

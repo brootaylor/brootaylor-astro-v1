@@ -35,4 +35,17 @@
   .flow > * + * {
     margin-top: var(--fluid-space-xs-s);
   }
+
+  /* Italic as styling only. Use `<em>` for stress emphasis and `<i>` for an alternate voice
+     (a term, a foreign phrase); this class is for when the slant is purely visual. */
+  .italic {
+    font-style: italic;
+  }
+
+  /* One step bolder than the parent's weight, as styling only. Use `<strong>` for importance.
+     `bolder` is relative, so it adapts to wherever it's used: in body text (weight 300) it
+     gives 400. Combine with `.italic` for both, e.g. the "Updated:" label on a post. */
+  .bolder {
+    font-weight: bolder;
+  }
 }

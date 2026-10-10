@@ -1,7 +1,9 @@
 // Date helpers for posts. A post's `date` can be a bare day (`date: 2026-02-22`) or carry a time
 // (`date: 2026-10-07T16:00:00`). YAML parses the bare form as UTC midnight, so "is it exactly UTC
 // midnight?" is how we tell the two apart: those get a date only, everything else gets a time too.
-// Consequence: a time of exactly midnight is indistinguishable from a bare date and shows no time.
+// Consequence: a time that is exactly UTC midnight once converted is indistinguishable from a bare
+// date and shows no time. That's a written time of 00:00 (left alone, see `fromLondonTime`), and,
+// in BST only, a written 01:00, which converts to 00:00 UTC.
 const hasTime = (date: Date) => date.getTime() % 86_400_000 !== 0;
 
 // The zone times are written and shown in. The site is `en-gb`, so a UK reader expects UK clock

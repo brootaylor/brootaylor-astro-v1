@@ -2,6 +2,7 @@
 title: "Fluid type and spacing with clamp()"
 description: "How a handful of clamp() values give the whole site a smoothly scaling type and spacing system, with no breakpoints."
 date: 2026-10-03T17:22:51
+updated: 2026-10-10T14:08:53
 draft: false
 ---
 
@@ -27,7 +28,7 @@ That particular line is my body text. It's 18px on a small phone, 20px on a wide
 
 ## Where those odd numbers come from
 
-I didn't work out `1.0739rem + 0.2273vw` by hand. 🙃 It's just a straight line between two points: "18px at a 320px wide viewport" and "20px at a 1200px wide viewport". Rather than doing that algebra myself, I used the calculator at [Utopia](https://utopia.fyi/), which spits out the clamp values for each step. The whole idea of fluid type and spacing scales with no breakpoints comes from their work, and it's where I learnt the approach. If you want the thinking behind it, start there.
+I didn't work out `1.0739rem + 0.2273vw` by hand. 🙃 It's just a straight line between two points: "18px at a 360px wide viewport" and "20px at a 1240px wide viewport". Rather than doing that algebra myself, I used the calculator at [Utopia](https://utopia.fyi/), which spits out the clamp values for each step. The whole idea of fluid type and spacing scales with no breakpoints comes from their work, and it's where I learnt the approach. If you want the thinking behind it, start there.
 
 The scale itself is a modular one. On small screens each step is 1.2 times the last, and on large screens 1.25 times. So the gap between body text and headings opens up a little as the screen gets bigger, which feels about right to me.
 

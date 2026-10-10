@@ -1,24 +1,29 @@
 ---
-import BaseLayout from "./BaseLayout.astro";
+import BaseLayout from './BaseLayout.astro';
 
 // Date helpers, shared with the posts listing so both format identically.
-import { formatDate, toDateTime } from "../utils/date";
+import { formatDate, toDateTime } from '../utils/date';
 
+// `frontmatter` is the post's validated data (`post.data`), passed in by src/pages/posts/[slug].astro.
 const { frontmatter } = Astro.props;
 ---
 
-{/* BaseLayout renders the <h1>, so the date goes first in the slot to land directly beneath it.
+{/* Every post is an article, in both senses: `article` makes BaseLayout wrap it in an <article>
+    with the <h1> in the article's own <header>, and `ogType="article"` describes it as one when
+    shared. The dates go in the `meta` slot, so they land in that header beneath the <h1>.
     `description` is optional in the schema — omitting it lets BaseLayout apply the site default. */}
-<BaseLayout title={frontmatter.title} description={frontmatter.description} ogType="article">
+<BaseLayout title={frontmatter.title} description={frontmatter.description} ogType="article" article>
   {/* The published and updated times are inline siblings inside one <small>, so they read as a
       single line of metadata and need no wrapper paragraph. The "Published:" label is visually
       hidden (the date alone is obvious to a sighted reader, but a screen reader benefits from it),
-      and the dot between the two is decorative. "Updated" only appears when the post has an
-      `updated` date, formatted by the same helpers as the published one. */}
-  <small>
+      and the dot between the two is decorative, so it's hidden from screen readers. "Updated"
+      only appears when the post has an `updated` date, formatted by the same helpers as the
+      published one. Its label is set italic and a step bolder by the `.italic` and `.bolder`
+      utilities (src/styles/utilities.css): that's styling, not stress emphasis, so no <em><b>. */}
+  <small slot="meta">
     <span class="visually-hidden">Published: </span><time datetime={toDateTime(frontmatter.date)}>{formatDate(frontmatter.date)}</time>
     {frontmatter.updated && (
-      <><i aria-hidden="true">&nbsp;&middot;&nbsp;</i><em><b>Updated: </b></em><time datetime={toDateTime(frontmatter.updated)}>{formatDate(frontmatter.updated)}</time></>
+      <><span aria-hidden="true">&nbsp;&middot;&nbsp;</span><span class="italic bolder">Updated: </span><time datetime={toDateTime(frontmatter.updated)}>{formatDate(frontmatter.updated)}</time></>
     )}
   </small>
   <slot />
@@ -28,9 +33,10 @@ const { frontmatter } = Astro.props;
   /* Wrapped in `@layer components`: Astro's scoped styles are otherwise unlayered, and unlayered
      CSS beats every layer. The wrapper keeps the cascade order from src/styles/index.css true. */
   @layer components {
-    /* `<small>` is inline by default. As a direct child of `.flow` it needs to be a block so it
-       gets the flow gap beneath the <h1>. The size is set here (rather than left to the browser's
-       "smaller") so it matches the listing page's dates. The times inside stay inline. */
+    /* `<small>` is inline by default. As a direct child of the article header's `.flow` it needs
+       to be a block so it gets the flow gap beneath the <h1>. The size is set here (rather than
+       left to the browser's "smaller") so it matches the listing page's dates. The times inside
+       stay inline. */
     small {
       display: block;
       font-size: var(--fluid-type--1);

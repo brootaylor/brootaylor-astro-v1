@@ -64,4 +64,4 @@ A browser without `@layer` support gets unstyled but readable HTML. I'm fine wit
 
 ## What's next
 
-There's a `transitions` layer declared at the end of that list. It was empty when I first wrote this, and it isn't any more: page transitions live there now, using the native View Transitions API. I wrote that up in [Page transitions with native view transitions](/posts/css-page-transitions).
+There's a `transitions` layer declared at the end of that list. It was empty when I first wrote this, and it isn't any more: page transitions live there now, using the native View Transitions API. I wrote that up in [Page transitions with native view transitions](/posts/css-page-transitions/).

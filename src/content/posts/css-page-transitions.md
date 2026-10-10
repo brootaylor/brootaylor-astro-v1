@@ -87,7 +87,7 @@ My first instinct was to force it back inline. Then I thought about it properly:
 
 ```js
 build: {
-  inlineStylesheets: "never",
+  inlineStylesheets: 'never',
 },
 ```
 

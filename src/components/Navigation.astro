@@ -1,22 +1,29 @@
 ---
-import Link from "./Link.astro";
-
 // The service worker stores these pages when it installs, so they work offline. Adding or
 // removing a link here means updating `precachedPages` in src/integrations/service-worker.ts
 // and the list on src/pages/offline.astro.
+//
+// Every href ends in a slash, matching the directories static output writes. Netlify 301s the
+// slashless form, so `/about` would cost an extra round trip on every click.
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/about/', label: 'About' },
+  { href: '/posts/', label: 'Posts' },
+];
+
+// Marks the link for the page being viewed. A post counts as being in Posts, so anything under a
+// link's path matches it; Home only matches itself, or it would match every page.
+const { pathname } = Astro.url;
+const isCurrent = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 ---
 
 <nav>
   <ul role="list">
-    <li>
-      <Link href="/">Home</Link>
-    </li>
-    <li>
-      <Link href="/about">About</Link>
-    </li>
-    <li>
-      <Link href="/posts">Posts</Link>
-    </li>
+    {links.map(({ href, label }) => (
+      <li>
+        <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>
+      </li>
+    ))}
   </ul>
 </nav>
 
@@ -24,10 +31,9 @@ import Link from "./Link.astro";
   /* Wrapped in `@layer components`: Astro's scoped styles are otherwise unlayered, and unlayered
      CSS beats every layer. The wrapper keeps the cascade order from src/styles/index.css true. */
   @layer components {
-    /* Spacing below now lives on `.nav-wrapper` in Header.astro, which centre-aligns this against the theme toggle */
-
-    /* No disclosure menu: the links wrap onto a second row rather than overflowing,
-       so navigation never depends on JavaScript at any width */
+    /* No disclosure menu: the links wrap onto a second row rather than overflowing, so navigation
+       never depends on JavaScript at any width. The space below the nav is set on `.nav-wrapper`
+       in Header.astro, which also centre-aligns it against the theme toggle. */
     ul {
       display: flex;
       flex-wrap: wrap;

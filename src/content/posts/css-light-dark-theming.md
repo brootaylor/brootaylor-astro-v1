@@ -58,7 +58,7 @@ I also wanted a toggle, so a visitor can pick Light, Dark or System regardless o
 
 The toggle just sets a `data-theme` attribute on `<html>`. With no attribute, the `light dark` value stands and the OS is followed natively. Three modes, no colour value written twice. That was a nice surprise.
 
-Switching also cross-fades in browsers that support view transitions, which I wrote about in [Page transitions with native view transitions](/posts/css-page-transitions).
+Switching also cross-fades in browsers that support view transitions, which I wrote about in [Page transitions with native view transitions](/posts/css-page-transitions/).
 
 ---
 

@@ -1,17 +1,17 @@
 ---
-// This is the main page for the blog posts. It fetches all the published blog entries from the `posts` collection, checks their draft status, sorts them by date, and displays them in a list with links to their individual pages.
-import BaseLayout from "../../layouts/BaseLayout.astro";
+// The posts listing: every published post, newest first, each with its date.
+import BaseLayout from '../../layouts/BaseLayout.astro';
 
 // Date helpers, so the listing and the post pages format dates identically.
 import { formatDate, toDateTime } from '../../utils/date';
 
-// Drafts filtered out and sorted newest first. Shared with the RSS feed so the two can't drift.
+// Drafts filtered out and sorted newest first. Shared with the post pages and the RSS feed, so
+// the three can't drift.
 import { getPublishedPosts } from '../../utils/posts';
 
 const sortedPosts = await getPublishedPosts();
 
-//
-const title = "Posts";
+const title = 'Posts';
 ---
 
 <BaseLayout title={title}>
@@ -19,7 +19,8 @@ const title = "Posts";
   <ul class="flow">
     {sortedPosts.map((post) => (
       <li>
-        <a href={`/posts/${post.id}`}>{post.data.title}</a>
+        {/* Trailing slash to match the directory static output writes, as the feed does. */}
+        <a href={`/posts/${post.id}/`}>{post.data.title}</a>
         <time datetime={toDateTime(post.data.date)}>{formatDate(post.data.date)}</time>
       </li>
     ))}

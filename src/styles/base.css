@@ -23,8 +23,6 @@
        screens. `ch` is the width of a "0" in the body font, so the cap follows the text size.
        Box sizing is `border-box` (see reset.css), so the side padding below counts towards it. */
     max-width: 80ch;
-    /* At least a full screen tall, so the footer isn't left floating mid-page on short pages. */
-    min-height: 100vh;
     /* Prioritise speed over fancy kerning/ligatures for body text. */
     text-rendering: optimizeSpeed;
     font-family: var(--ff-base);
@@ -67,15 +65,11 @@
     font-weight: 700;
   }
 
+  /* The underline skips letters' descenders (g, p, y) by default (`text-decoration-skip-ink`'s
+     initial value is `auto`), so there's nothing to set for that. */
   a {
     color: var(--color-link);
     text-decoration: underline;
-  }
-
-  /* Links without a class (i.e. ordinary in-text links) get the browser to skip the underline
-     where it would cross a letter's descender (g, p, y). It's a readability nicety. */
-  a:not([class]) {
-    text-decoration-skip-ink: auto;
   }
 
   /* Images never overflow their container, and `display: block` removes the small gap that

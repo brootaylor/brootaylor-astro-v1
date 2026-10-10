@@ -58,15 +58,19 @@ export const serviceWorker = (): AstroIntegration => ({
       const version = hash.digest('hex').slice(0, 10);
 
       const manifest = { assets, pages: precachedPages, offline: offlinePage };
-      // The manifest sits inside a single-quoted string in the template, so escape for that.
-      const manifestSource = JSON.stringify(manifest).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
+      // The placeholders are quoted strings, so the template is valid JS as it stands. Matching
+      // the quotes too means a mention in a comment can never be replaced by mistake. The version
+      // goes in as a string; the manifest replaces its quotes entirely and lands as an object
+      // literal (JSON is valid JS). Functions as replacements, so a `$` is never read as a pattern.
       if (!template.includes("'__VERSION__'") || !template.includes("'__MANIFEST__'")) {
-        throw new Error('service-worker: sw.js is missing its __VERSION__ or __MANIFEST__ placeholder');
+        throw new Error("service-worker: sw.js is missing its '__VERSION__' or '__MANIFEST__' placeholder");
       }
       writeFileSync(
         join(dist, 'sw.js'),
-        template.replace('__VERSION__', version).replace('__MANIFEST__', () => manifestSource)
+        template
+          .replace("'__VERSION__'", () => `'${version}'`)
+          .replace("'__MANIFEST__'", () => JSON.stringify(manifest))
       );
     },
   },

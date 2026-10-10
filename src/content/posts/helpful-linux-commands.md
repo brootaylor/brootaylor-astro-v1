@@ -2,7 +2,7 @@
 title: "Helpful Linux commands"
 description: "A personal cheat sheet of the Linux commands I reach for most: listing, moving and finding files, searching, system info and processes."
 date: 2026-02-24T18:25:36.671
-updated: 2026-10-07T21:17:42
+updated: 2026-10-10T11:42:17
 draft: false
 ---
 
@@ -13,6 +13,8 @@ I'm a web developer, not a sysadmin, so none of this is deep wizardry. It's the 
 The sections run roughly in the order I'd use them: finding your way around, finding things, reading them, then poking at the system itself. Each command has a comment above it saying what it does, so you can skim for the one you need.
 
 A word of caution before you copy anything. Commands like `rm -r` delete without asking and without a bin to rescue things from, so read the path twice and be sure where you are before pressing enter.
+
+---
 
 ## Listing files and directories
 
@@ -32,6 +34,8 @@ ls -lh
 # List all files in the current directory and its subdirectories
 ls -R
 ```
+
+---
 
 ## Navigating & managing files and directories
 
@@ -58,6 +62,8 @@ cp source_file.txt destination_file.txt
 mv source_file.txt destination_file.txt
 ```
 
+---
+
 ## Finding files
 
 ```bash
@@ -76,6 +82,8 @@ find . -type f -name "*.log" -exec cp {} ./backup \;
 # Find all .txt files in current directory and copy them to a backup directory, preserving the directory structure
 find . -type f -name "*.txt" -exec rsync -R {} ./backup \;
 ```
+
+---
 
 ## Viewing file contents
 
@@ -96,6 +104,8 @@ head file.txt
 tail file.txt
 ```
 
+---
+
 ## Searching within files
 
 ```bash
@@ -109,6 +119,8 @@ grep "search_string" *.txt
 grep -r "search_string" .
 ```
 
+---
+
 ## Combining commands
 
 ```bash
@@ -118,12 +130,14 @@ find . -type f -name "*.txt" | xargs cat
 # Combine find, cat, and grep to search for a specific string in all .txt files in the current directory and subdirectories
 find . -type f -name "*.txt" | xargs cat | grep "ERROR"
 
-# Combine find, cat, grep, sort, and uniq to search for a specific string in all .txt files in the current directory and subdirectories, sort the results by the 4th field, and remove duplicate lines based on the 3rd field
+# Combine find, cat, grep, sort, and uniq to search for a specific string in all .txt files in the current directory and subdirectories, sort the results by the 4th field, and remove repeated lines, ignoring the first 3 fields when comparing
 find . -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3
 
-# Combine find, cat, grep, sort, and uniq to search for a specific string in all .txt files in the current directory and subdirectories, sort the results by the 4th field, remove duplicate lines based on the 3rd field, and save the output to a file called errors.log
+# Combine find, cat, grep, sort, and uniq to search for a specific string in all .txt files in the current directory and subdirectories, sort the results by the 4th field, remove repeated lines, ignoring the first 3 fields when comparing, and save the output to a file called errors.log
 find . -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3 > errors.log
 ```
+
+---
 
 ## System information
 
@@ -146,6 +160,8 @@ uptime
 # Display the system's disk usage
 df -h
 ```
+
+---
 
 ## Process management
 

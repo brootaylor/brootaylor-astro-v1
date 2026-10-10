@@ -45,13 +45,17 @@
 
     # `'unsafe-inline'` is unavoidable here, not laziness: the theme script in BaseLayout's <head>
     # is inline so it runs before first paint, and the cascade layer order statement has to stay an
-    # inline <style>. The service worker registration at the end of <body> is inline too, by choice
-    # rather than necessity; it could move to a file, but the first two can't. The main stylesheet
-    # and the bundled scripts are external files. Hashes would break on every edit to the inline
-    # code; nonces need a server, which static hosting
-    # doesn't provide. The remaining directives are still worth having — they block framing,
-    # base-tag hijacking, form exfiltration and plugin content.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    # inline <style>. Shiki, which highlights code blocks in posts, also writes `style="…"`
+    # attributes, and those need it in `style-src` too. The service worker registration at the end
+    # of <body> is inline as well, by choice rather than necessity; it could move to a file, but the
+    # others can't. The main stylesheet and the bundled scripts are external files. Hashes would
+    # break on every edit to the inline code; nonces need a server, which static hosting doesn't
+    # provide. The remaining directives are still worth having — they block framing, base-tag
+    # hijacking, form exfiltration and plugin content.
+    #
+    # `img-src` is `'self'` only: nothing on the site uses a `data:` image. Add `data:` back if
+    # something ever does.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # The service worker keeps one fixed name, so the browser has to ask the server whether it has
 # changed every time, or a deploy would never reach returning visitors. `no-cache` still allows

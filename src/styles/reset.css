@@ -90,11 +90,12 @@
   }
 
   /* The opposite case: only when the person has NOT asked for reduced motion, smooth the
-     scroll to an in-page anchor. `:has(:target)` matches the root once the URL fragment points
-     at an element, and `scroll-padding-top` stops the target landing flush under the viewport
-     edge. Progressive enhancement: where `:has()` isn't supported the jump is simply instant. */
+     scroll to an in-page anchor. `html:has(:target)` matches the root once the URL fragment
+     points at an element; the root is what scrolls the page, so that's the only element the rule
+     needs (a bare `:has(:target)` would match every ancestor of the target). `scroll-padding-top`
+     stops the target landing flush under the viewport edge. */
   @media (prefers-reduced-motion: no-preference) {
-    :has(:target) {
+    html:has(:target) {
       scroll-behavior: smooth;
       scroll-padding-top: 3rem;
     }

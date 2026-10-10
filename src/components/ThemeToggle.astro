@@ -50,7 +50,7 @@ const options = [
       display: block;
       padding: 0.15em 0.6em;
       border: 1px solid var(--color-hr);
-      border-radius: 4px;
+      border-radius: 0.25rem;
       font-size: var(--fluid-type--1);
       cursor: pointer;
     }
@@ -73,35 +73,34 @@ const options = [
   // Shared helper: cross-fades the change where the browser supports it and motion is allowed
   import { withViewTransition } from '../scripts/view-transition';
 
-  // The key used in localStorage to store the user's theme preference. The inline script in
-  // BaseLayout.astro's <head> reads the same key to apply it before first paint, so keep the two in step.
+  // The localStorage key for the visitor's choice. The inline script in BaseLayout.astro's <head>
+  // reads the same key to apply it before first paint, so keep the two in step.
   const storageKey = 'theme';
-  // Select the theme toggle fieldset, which contains the radio buttons for theme selection
   const toggle = document.querySelector('.theme-toggle');
 
-  // If the toggle exists, we can assume scripting is available and proceed to set up the theme toggle functionality
+  // The `instanceof` check narrows the type, and skips everything if the markup is ever missing.
   if (toggle instanceof HTMLFieldSetElement) {
-    // Now we know scripting is available...
-    toggle.hidden = false; // Reveal the theme toggle control
+    // This script running is what proves JavaScript is available, so the control can be shown.
+    toggle.hidden = false;
 
-    // The inline script in BaseLayout.astro's <head> has already applied any stored choice to <html> as `data-theme`,
-    // so read the current theme from there rather than from localStorage again. No attribute means 'system'.
+    // The inline script in BaseLayout.astro's <head> has already applied any stored choice to <html>
+    // as `data-theme`, so read it from there rather than from localStorage again. No attribute
+    // means 'system'.
     const current = document.documentElement.dataset.theme ?? 'system';
 
-    // Tick the radio button that matches the current theme
+    // Tick the radio that matches the current theme.
     for (const radio of toggle.querySelectorAll('input[name="theme"]')) {
-      // Only input elements have a `value` to compare
       if (radio instanceof HTMLInputElement) radio.checked = radio.value === current;
     }
 
-    // Add an event listener to the toggle fieldset to handle changes in the selected theme
+    // One listener on the fieldset catches a change on any of its radios.
     toggle.addEventListener('change', (event) => {
-      // Ensure the event target is an input element before proceeding
       if (!(event.target instanceof HTMLInputElement)) return;
 
       const value = event.target.value;
 
-      // If the selected value is 'system', we remove the `data-theme` attribute from the <html> element, allowing the OS preference to take effect. Otherwise, we set the `data-theme` attribute to the selected value and store it in localStorage for future visits.
+      // 'system' removes the attribute and the stored choice, handing control back to the OS.
+      // Light or Dark sets the attribute and stores it for the next visit.
       const applyTheme = () => {
         if (value === 'system') {
           // Removing the attribute hands control back to `prefers-color-scheme`
@@ -114,7 +113,7 @@ const options = [
         }
       };
 
-      // Cross-fade between the old and new colours where possible; otherwise the theme switches instantly
+      // Cross-fade between the old and new colours where possible; otherwise the theme switches instantly.
       withViewTransition(applyTheme);
     });
   }

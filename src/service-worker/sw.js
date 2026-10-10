@@ -20,9 +20,10 @@
 // To retire the worker if a bad one ever ships, deploy a /sw.js that deletes every cache and
 // calls `registration.unregister()`. See CLAUDE.md.
 
-// Filled in by the integration. The JSON is `{ assets, pages, offline }`: URL paths to precache.
+// Filled in by the integration. `version` becomes a short hash; `manifest` becomes an object,
+// `{ assets, pages, offline }`, of URL paths to precache.
 const version = '__VERSION__';
-const manifest = JSON.parse('__MANIFEST__');
+const manifest = '__MANIFEST__';
 
 const assetsCacheName = 'playground-assets';
 const pagesCacheName = `playground-pages@${version}`;
