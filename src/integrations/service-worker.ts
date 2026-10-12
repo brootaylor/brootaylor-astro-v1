@@ -16,7 +16,7 @@ import type { AstroIntegration } from 'astro';
 // Pages stored when the worker installs: the ones the navigation links to, plus the offline page.
 // Posts aren't listed, so the install doesn't grow with the blog; each is kept the first time it's
 // read. Keep this in step with the links in Navigation.astro and src/pages/offline.astro.
-const precachedPages = ['/', '/about/', '/posts/', '/offline/'];
+const precachedPages = ['/', '/posts/', '/offline/'];
 const offlinePage = '/offline/';
 
 // Unhashed files from public/ that every page asks for.

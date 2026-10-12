@@ -21,7 +21,8 @@
    (Read left to right: later layers win.)
 
      reset       Strip browser defaults. Deliberately the weakest layer, so anything beats it.
-     tokens      Design tokens: custom properties (colours, type scale, spacing scale).
+     tokens      Design tokens: custom properties, in tiers (palette and fluid scales, then
+                 semantic tokens for colours, weights, radius and the rest). See tokens.css.
      base        Plain element styles (body, headings, links). No classes involved.
      components  Styles that belong to one component. Each .astro file's <style> block is
                  wrapped in `@layer components { … }` (see "Component styles" below).

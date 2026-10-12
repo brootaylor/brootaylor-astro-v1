@@ -28,12 +28,12 @@
     font-family: var(--ff-base);
     font-size: var(--fluid-type-0);
     /* Light weight is deliberate; headings override it below. */
-    font-weight: 300;
+    font-weight: var(--fw-light);
     /* The background has to be set explicitly: without it dark mode only recolours the
        text and leaves the browser's default white page behind it. */
     background-color: var(--color-bg);
     color: var(--color-body);
-    line-height: 1.5;
+    line-height: var(--lh-body);
     /* Fluid side gutters and top/bottom padding: wide margins on big screens, tight on phones. */
     padding-inline: var(--fluid-space-s-2xl);
     padding-block: var(--fluid-space-s-l);
@@ -48,7 +48,7 @@
 
   h1,
   h2 {
-    line-height: 1.1;
+    line-height: var(--lh-heading);
     /* `balance` evens out line lengths in short blocks like headings. Same fallback story. */
     text-wrap: balance;
   }
@@ -57,12 +57,12 @@
      post bodies should start at <h2>. */
   h1 {
     font-size: var(--fluid-type-3);
-    font-weight: 900;
+    font-weight: var(--fw-black);
   }
 
   h2 {
     font-size: var(--fluid-type-1);
-    font-weight: 700;
+    font-weight: var(--fw-bold);
   }
 
   /* The underline skips letters' descenders (g, p, y) by default (`text-decoration-skip-ink`'s
@@ -90,7 +90,7 @@
      paragraph is deliberately left alone so it matches the surrounding text. */
   pre {
     padding: var(--fluid-space-xs-s);
-    border-radius: 0.25rem;
+    border-radius: var(--radius);
     font-size: var(--fluid-type--2);
   }
 
@@ -99,6 +99,6 @@
     background-color: var(--color-hr);
     margin-top: 2rem;
     margin-inline: 0 auto;
-    height: 0.1rem;
+    height: var(--border-thin);
   }
 }

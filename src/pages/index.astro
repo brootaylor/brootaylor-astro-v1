@@ -7,9 +7,9 @@ const title = "Hi, I'm Bruce.";
 {/* An article rather than a plain page: the introduction is a self-contained piece that would
     make sense on its own. `article` gives it the <article> structure, and the Open Graph
     type "profile" describes it as a page about a person when it's shared. See BaseLayout.astro
-    for both. */}
+    for both. It's the site's only profile page, so posts name it as their `article:author`. */}
 <BaseLayout title={title} og={{ type: 'profile' }} article>
-  <p>A web developer, ui engineer, drummer, and wannabe pilot living in the south east of England.</p>
+  <p>A web developer, ui engineer, drummer, and wannabe pilot. I'm originally from South Africa and grew up on a dairy farm in a very <a href="https://youtu.be/bGQbM3QfA5w">beautiful part of the country</a>. I now live in the south east of England with my family and build websites for a living.</p>
   <p>I try my best to build web solutions that are <a href="https://resilientwebdesign.com/">resilient</a>, <a href="https://trentwalton.com/2014/03/10/device-agnostic/">usable</a> and as <a href="https://futurefriendlyweb.com/">future-friendly</a> as possible. For this reason I prefer a vanilla approach and tend to be fairly tech-agnostic.</p>
   <h2>What's this website about?</h2>
   <p>It's an experimental playground for web development ideas, techniques, features, demos and learnings, using the Astro web framework as the platform.</p>

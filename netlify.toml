@@ -46,12 +46,14 @@
     # `'unsafe-inline'` is unavoidable here, not laziness: the theme script in BaseLayout's <head>
     # is inline so it runs before first paint, and the cascade layer order statement has to stay an
     # inline <style>. Shiki, which highlights code blocks in posts, also writes `style="…"`
-    # attributes, and those need it in `style-src` too. The service worker registration at the end
-    # of <body> is inline as well, by choice rather than necessity; it could move to a file, but the
-    # others can't. The main stylesheet and the bundled scripts are external files. Hashes would
-    # break on every edit to the inline code; nonces need a server, which static hosting doesn't
-    # provide. The remaining directives are still worth having — they block framing, base-tag
-    # hijacking, form exfiltration and plugin content.
+    # attributes, and those need it in `style-src` too, as do the token samples on the
+    # /design-system/ page, each drawn with a `style="…"` that uses its token. The service
+    # worker registration at the end of <body> is inline as well, by choice rather than
+    # necessity; it could move to a file, but the others can't. The main stylesheet and the
+    # bundled scripts are external files. Hashes would break on every edit to the inline code;
+    # nonces need a server, which static hosting doesn't provide. The remaining directives are
+    # still worth having — they block framing, base-tag hijacking, form exfiltration and plugin
+    # content.
     #
     # `img-src` is `'self'` only: nothing on the site uses a `data:` image. Add `data:` back if
     # something ever does.

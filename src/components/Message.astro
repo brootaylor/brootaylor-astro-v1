@@ -11,16 +11,22 @@ const message = "This website is an experimental space and very much a work in p
   /* Wrapped in `@layer components`: Astro's scoped styles are otherwise unlayered, and unlayered
      CSS beats every layer. The wrapper keeps the cascade order from src/styles/index.css true. */
   @layer components {
-    /* Scoped rather than global tokens — these amber values are specific to this banner */
+    /* Component tokens (see the tiers in src/styles/tokens.css): these amber values belong to this
+       banner alone, so they're declared here rather than in `:root`, then used below. Custom
+       properties inherit, so the <p> inside picks up `--message-text` from the <aside>. */
     aside {
-      background-color: light-dark(oklch(0.98 0.027 95), oklch(0.26 0.026 96));
-      border: 1px solid light-dark(oklch(0.94 0.076 92), oklch(0.43 0.054 92));
+      --message-bg: light-dark(oklch(0.98 0.027 95), oklch(0.26 0.026 96));
+      --message-border: light-dark(oklch(0.94 0.076 92), oklch(0.43 0.054 92));
+      --message-text: light-dark(oklch(0.47 0.098 102), oklch(0.88 0.066 96));
+
+      background-color: var(--message-bg);
+      border: var(--border-thin) solid var(--message-border);
       padding: 1em;
-      border-radius: 0.25rem;
+      border-radius: var(--radius);
     }
 
     p {
-      color: light-dark(oklch(0.47 0.098 102), oklch(0.88 0.066 96));
+      color: var(--message-text);
     }
   }
 </style>

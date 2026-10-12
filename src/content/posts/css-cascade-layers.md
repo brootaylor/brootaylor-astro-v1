@@ -2,7 +2,7 @@
 title: "Taming the cascade with @layer"
 description: "Splitting a single stylesheet into cascade layers, and keeping the layer order intact in a production build."
 date: 2026-10-06T09:47:23
-updated: 2026-10-12T09:40:18
+updated: 2026-10-12T21:09:31
 draft: false
 ---
 
@@ -30,7 +30,7 @@ A cascade layer sits *above* specificity and source order. A rule in a later lay
 
 Read it left to right, later wins. Reset is deliberately the weakest, so anything can override it. Utilities sit near the end, so a little `.visually-hidden` class reliably beats a component's own styles, with no `!important` and no specificity games.
 
-`main.css` is now split by purpose into `reset.css`, `tokens.css`, `base.css` and `utilities.css`, each wrapping its rules in the matching layer. They're pulled together with a plain native `@import`, and Astro's build tooling bundles them. No Sass, no PostCSS.
+`main.css` is now split by purpose into `reset.css`, `tokens.css`, `base.css`, `utilities.css` and `transitions.css`, each wrapping its rules in the matching layer. They're pulled together with a plain native `@import`, and Astro's build tooling bundles them. No Sass, no PostCSS.
 
 ---
 

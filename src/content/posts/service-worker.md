@@ -2,7 +2,7 @@
 title: "Reading offline with a service worker"
 description: "How this site's hand-written service worker caches assets and pages, falls back to an offline page, and lists the posts you can still read."
 date: 2026-10-12T08:33:45
-updated: 2026-10-12T17:49:50
+updated: 2026-10-12T20:59:55
 draft: false
 ---
 
@@ -212,7 +212,7 @@ The `?.` skips it in a browser without the feature. The worker then uses that ea
 
 ## Cache keys, and what's worth storing
 
-`/about` and `/about/` are the same page, but they'd be two separate cache entries, and a tracking parameter on a link would make a third. So every page is stored under one key, the path with a trailing slash and no query string:
+`/posts` and `/posts/` are the same page, but they'd be two separate cache entries, and a tracking parameter on a link would make a third. So every page is stored under one key, the path with a trailing slash and no query string:
 
 ```js
 const pageKey = (urlString) => {
@@ -230,13 +230,13 @@ Not every response is worth keeping:
 const isCacheable = (response) => response.ok && !response.redirected && response.type === 'basic';
 ```
 
-It has to be a success, from this site, and not the result of a redirect. That last one matters because the server answers `/about` with a redirect to `/about/`, and a browser refuses a redirected response handed to it as a page.
+It has to be a success, from this site, and not the result of a redirect. That last one matters because the server answers `/posts` with a redirect to `/posts/`, and a browser refuses a redirected response handed to it as a page.
 
 ---
 
 ## Installing
 
-When a new worker installs, it stores the assets and a few pages up front: the home page, About, the posts listing and the offline page.
+When a new worker installs, it stores the assets and a few pages up front: the home page, the posts listing and the offline page.
 
 ```js
 const precache = async () => {

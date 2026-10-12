@@ -1,15 +1,47 @@
 /* ==========================================================================
    Design tokens  (@layer tokens)
    ==========================================================================
-   Every site-wide design decision lives here as a CSS custom property: colours, the font
-   stack, the type scale and the spacing scale. Other files reference these via `var(--…)`
-   rather than hardcoding values, so changing the look of the whole site is a one-file edit.
+   The site-wide design decisions live here as CSS custom properties: colours, the font
+   stack, weights, line heights, the type scale, the spacing scale, radii, borders and the
+   focus ring. Other files reference these via `var(--…)` rather than hardcoding values, so
+   changing any of them is a one-file edit. (A few fixed offsets, such as the `hr` margin,
+   are still written out where they're used: none matches a step on the fluid scale. And the
+   page cross-fade's `--transition-duration` lives in transitions.css, inside the reduced-motion
+   gate with the rules it times.)
 
    Custom properties inherit and are resolved at use time, so they don't care which layer
    they're declared in relative to the rules that use them. The layer is just for tidiness.
 
-   Rule of thumb: `:root` holds only global, semantic tokens. A colour used by exactly one
-   component (e.g. the amber banner in Message.astro) stays in that component's own styles.
+   Tiers
+   The tokens form a design system, organised in tiers. Each tier refers only to the ones
+   above it, so a change made higher up flows down on its own. The tiers in use today:
+
+     Primitives   The raw values: the colour palette, and the fluid type and space scales.
+                  They say what a value IS, not what it's FOR. Outside this file, only the
+                  fluid scales are used directly; no stylesheet or component uses a palette
+                  colour. (The /design-system/ page draws them, but only to display them.)
+     Semantic     What everything else uses: `--color-link`, `--radius`, `--fw-bold`…
+                  They say what a value is FOR. A semantic colour picks its light and dark
+                  primitives with `light-dark()`.
+     Component    Not in this file. A value that belongs to exactly one component (the
+                  amber banner in Message.astro, say) is declared as a custom property at
+                  the top of that component's own styles, and used from there.
+
+   The tiers can grow with the site. If it ever needs a variation beyond light and dark (a
+   high-contrast or a seasonal theme, say), a theme tier would sit between primitives and
+   semantic tokens, choosing which primitives the semantic tokens point at. Light and dark
+   need no tier of their own: `light-dark()` handles them inside each semantic token.
+
+   The rule: stylesheets and components use semantic or component tokens (or a fluid scale
+   step), never a palette colour or a raw value for something a token covers. Two things
+   stay as plain values on purpose: `em` spacing inside a component, which scales with the
+   component's own text, and the `1px` sizes in visually-hidden clipping patterns, which are
+   a mechanism, not a design decision.
+
+   Every token here is listed, and drawn with its live value, on the /design-system/ page
+   (src/pages/design-system.astro). That page reads this file at build time, so a new token
+   shows up there with no other edit. Its groups go by name prefix, so a token with a new
+   prefix appears under "Other" until the page is given a group for it.
    ========================================================================== */
 
 @layer tokens {
@@ -20,21 +52,21 @@
        https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme */
     color-scheme: light dark;
 
-    /* Colours. Each is a `light-dark(<light value>, <dark value>)` pair, resolved against the
-       computed `color-scheme` above. So one declaration covers three modes: OS light, OS dark,
-       and the manual override further down. Never add a separate dark palette or a
-       `prefers-color-scheme` block; add a pair here instead.
+    /* ----- Primitives ----- */
 
-       In dark mode neither the background nor the text is pure black or white: slightly-off
-       values avoid "halation" (glowing text) on OLED screens. Light mode does use pure white
-       and pure black. */
-    --color-bg: light-dark(oklch(1 0 0), oklch(0.2 0 0));
-    --color-body: light-dark(oklch(0 0 0), oklch(0.91 0 0));
-    --color-link: light-dark(oklch(0.45 0.313 264), oklch(0.77 0.122 254));
-    --color-hr: light-dark(oklch(0.92 0 0), oklch(0.34 0 0));
-
-    /* System font stack: no web font to download, so no layout shift and nothing extra shipped. */
-    --ff-base: system-ui, sans-serif;
+    /* Palette. Raw colours, in `oklch()` so lightness can be tuned on its own. Each is named by
+       its hue family and its lightness as a percentage, so `--palette-neutral-20` is a grey at
+       20% lightness. A palette colour has no meaning by itself: no stylesheet or component
+       uses one; the semantic colours below choose from them. Add a colour here only when a
+       semantic token needs it. */
+    --palette-neutral-0: oklch(0 0 0);
+    --palette-neutral-20: oklch(0.2 0 0);
+    --palette-neutral-34: oklch(0.34 0 0);
+    --palette-neutral-91: oklch(0.91 0 0);
+    --palette-neutral-92: oklch(0.92 0 0);
+    --palette-neutral-100: oklch(1 0 0);
+    --palette-blue-45: oklch(0.45 0.313 264);
+    --palette-blue-77: oklch(0.77 0.122 254);
 
     /* Fluid type scale. Each step is a `clamp(min, preferred, max)`: the size grows smoothly
        with the viewport between a small-screen value and a large-screen value, with no
@@ -74,6 +106,47 @@
     --fluid-space-s-xl: clamp(1.125rem, 0.0511rem + 4.7727vw, 3.75rem);
     /* Space s-2xl: 18px → 80px */
     --fluid-space-s-2xl: clamp(1.125rem, -0.4602rem + 7.0455vw, 5rem);
+
+    /* ----- Semantic tokens ----- */
+
+    /* Colours. Each is a `light-dark(<light value>, <dark value>)` pair, resolved against the
+       computed `color-scheme` above. So one declaration covers three modes: OS light, OS dark,
+       and the manual override further down. Never add a separate dark palette or a
+       `prefers-color-scheme` block; add a pair here instead, built from palette colours.
+
+       In dark mode neither the background nor the text is pure black or white: slightly-off
+       values avoid "halation" (glowing text) on OLED screens. Light mode does use pure white
+       and pure black. */
+    --color-bg: light-dark(var(--palette-neutral-100), var(--palette-neutral-20));
+    --color-body: light-dark(var(--palette-neutral-0), var(--palette-neutral-91));
+    --color-link: light-dark(var(--palette-blue-45), var(--palette-blue-77));
+    --color-hr: light-dark(var(--palette-neutral-92), var(--palette-neutral-34));
+
+    /* System font stack: no web font to download, so no layout shift and nothing extra shipped. */
+    --ff-base: system-ui, sans-serif;
+
+    /* Font weights. Body text is deliberately light; headings step up from it. */
+    --fw-light: 300;
+    --fw-bold: 700;
+    --fw-black: 900;
+
+    /* Line heights. Roomy for running text, tight for headings, which are large and short. */
+    --lh-body: 1.5;
+    --lh-heading: 1.1;
+
+    /* Corner radius, shared by everything with a box: code blocks, the banner, the theme
+       toggle, the skip link. */
+    --radius: 0.25rem;
+
+    /* Border width, for borders and rules alike. `1px` rather than a `rem` value so it stays a
+       crisp single line: a fractional width (0.1rem is 1.6px) gets drawn blurry or rounded
+       differently from screen to screen. */
+    --border-thin: 1px;
+
+    /* Focus ring for custom controls whose focus the browser can't draw (the theme toggle's
+       radios are invisible, so the ring goes on their labels). Drawn in `--color-link`. */
+    --focus-ring-width: 2px;
+    --focus-ring-offset: 2px;
   }
 
   /* Manual theme override. ThemeToggle.astro sets `data-theme` on <html> when a visitor picks

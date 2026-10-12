@@ -41,7 +41,7 @@ const neverIntercept = /^\/(rss\.xml|robots\.txt|sitemap.*\.xml|sw\.js)$/;
 const assetPaths = new Set(manifest.assets);
 
 // A page's cache key: the path with a trailing slash, and no query string or hash. Navigation links
-// on the site mix `/about` and `/about/`, and a tracking parameter shouldn't make a second copy.
+// on the site mix `/posts` and `/posts/`, and a tracking parameter shouldn't make a second copy.
 const pageKey = (urlString) => {
   const { origin, pathname } = new URL(urlString);
   const isFile = /\.[^/]+$/.test(pathname);

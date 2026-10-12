@@ -68,9 +68,9 @@ export default defineConfig({
   integrations: [
     sitemap({
       // The feed is for readers, not crawlers, and isn't an HTML page. The offline page is only
-      // ever shown by the service worker. Everything else the build emits is a real page worth
-      // indexing.
-      filter: (page) => !page.endsWith('/rss.xml') && !page.endsWith('/offline/'),
+      // ever shown by the service worker, and the design system page is a reference for working on
+      // the site. Everything else the build emits is a real page worth indexing.
+      filter: (page) => !page.endsWith('/rss.xml') && !page.endsWith('/offline/') && !page.endsWith('/design-system/'),
       // Gives each post a <lastmod>. See the helper for why only posts.
       serialize: addPostLastmod,
     }),

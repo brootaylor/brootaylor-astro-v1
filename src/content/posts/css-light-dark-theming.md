@@ -2,7 +2,7 @@
 title: "Light and dark theming with light-dark()"
 description: "One colour declaration that covers OS light, OS dark and a manual toggle, with no JavaScript needed for the baseline."
 date: 2026-09-28T11:08:36
-updated: 2026-10-08T11:57:48
+updated: 2026-10-12T21:11:44
 draft: false
 ---
 
@@ -26,17 +26,31 @@ That tells the browser the page supports both schemes. It follows the visitor's 
 
 ## One declaration per colour
 
-Each colour token is a `light-dark()` pair: first value for light, second for dark.
+Each colour token is a `light-dark()` pair: first value for light, second for dark. Both sides come from a small palette of raw colours:
 
 ```css
---color-bg: light-dark(oklch(1 0 0), oklch(0.2 0 0));
---color-body: light-dark(oklch(0 0 0), oklch(0.91 0 0));
---color-link: light-dark(oklch(0.45 0.313 264), oklch(0.77 0.122 254));
+--palette-neutral-0: oklch(0 0 0);
+--palette-neutral-20: oklch(0.2 0 0);
+--palette-neutral-34: oklch(0.34 0 0);
+--palette-neutral-91: oklch(0.91 0 0);
+--palette-neutral-92: oklch(0.92 0 0);
+--palette-neutral-100: oklch(1 0 0);
+--palette-blue-45: oklch(0.45 0.313 264);
+--palette-blue-77: oklch(0.77 0.122 254);
 ```
 
-They're `oklch()` colours rather than hex or `hsl()`. Its lightness value is designed to track how light a colour looks to the eye, which makes it easier to tune the light and dark halves of a pair against each other.
+```css
+--color-bg: light-dark(var(--palette-neutral-100), var(--palette-neutral-20));
+--color-body: light-dark(var(--palette-neutral-0), var(--palette-neutral-91));
+--color-link: light-dark(var(--palette-blue-45), var(--palette-blue-77));
+--color-hr: light-dark(var(--palette-neutral-92), var(--palette-neutral-34));
+```
 
-The browser picks whichever side matches the computed `color-scheme`. So there's no `prefers-color-scheme` media query and no second set of dark variables to forget to update. Adding a new colour means adding one pair. That's it.
+The palette and the colour tokens are separate tiers of the site's design system, which has [its own post](/posts/css-design-tokens/).
+
+The palette colours are `oklch()` rather than hex or `hsl()`. OKLCH's lightness value is designed to track how light a colour looks to the eye, which makes it easier to tune the light and dark halves of a pair against each other.
+
+The browser picks whichever side matches the computed `color-scheme`. So there's no `prefers-color-scheme` media query and no second set of dark variables to forget to update. Adding a new colour means adding one pair, plus a palette entry for either side the palette doesn't have yet.
 
 In dark mode, neither the background nor the text is pure black or white, by the way. Slightly off values avoid that glowing text effect ("halation") you get on OLED screens. Light mode does use pure white and pure black.
 

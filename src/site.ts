@@ -8,8 +8,8 @@ export const siteName = "Broo's Playground Website";
 export const siteDescription =
   'An experimental playground for web development ideas, techniques, features, demos and learnings, using the Astro web framework as the platform.';
 
-// The person the site belongs to. Used for the Open Graph `profile` tags on the homepage and the
-// About page (`profile:first_name` and `profile:last_name`).
+// The person the site belongs to. Used for the Open Graph `profile` tags on the homepage
+// (`profile:first_name` and `profile:last_name`).
 export const ownerFirstName = 'Bruce';
 export const ownerLastName = 'Taylor';
 

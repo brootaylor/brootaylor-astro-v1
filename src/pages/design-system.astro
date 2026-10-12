@@ -1,0 +1,202 @@
+---
+import { Code } from 'astro:components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+// `?raw` gives the file's text as a string (Vite does this at build time; nothing reaches the browser).
+import tokensCss from '../styles/tokens.css?raw';
+
+// A living reference for the design system: every token in src/styles/tokens.css, each drawn with
+// its own live value, followed by the plain elements and utilities those tokens style.
+//
+// The token list is read from tokens.css itself rather than written out here, so it can't drift:
+// add a token there and it appears here on the next build. Each sample uses `var(--name)`, so it
+// shows the value the browser actually resolves, in whichever theme is active.
+//
+// A reference for whoever works on the site, not a page for visitors, so it opts out with `noindex`,
+// is left out of the sitemap (astro.config.mjs) and isn't in the navigation.
+
+// Comments are stripped first, so a custom property mentioned in a comment isn't listed as a token.
+const declarations = [...tokensCss.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(
+  ([, name, value]) => ({ name, value: value.replace(/\s+/g, ' ').trim() })
+);
+
+// How each kind of token is drawn. `style` is applied to the sample element and uses the token, so
+// the sample is the token, not a copy of its value.
+type Sample = 'colour' | 'font' | 'weight' | 'line-height' | 'type' | 'space' | 'radius' | 'border' | 'focus' | 'none';
+
+// Groups, in the order the page shows them. A token matches the first group whose prefix it starts
+// with, so the longer prefixes don't need to come first unless they share a start.
+const groups: { prefix: string; heading: string; sample: Sample; note: string }[] = [
+  { prefix: '--palette-', heading: 'Palette', sample: 'colour', note: 'Primitives. No stylesheet or component uses these: the semantic colours below pick from them.' },
+  { prefix: '--color-', heading: 'Colours', sample: 'colour', note: 'Semantic. Each is a light and dark pair, so these swatches follow the theme toggle.' },
+  { prefix: '--ff-', heading: 'Font family', sample: 'font', note: 'Semantic.' },
+  { prefix: '--fw-', heading: 'Font weights', sample: 'weight', note: 'Semantic.' },
+  { prefix: '--lh-', heading: 'Line heights', sample: 'line-height', note: 'Semantic.' },
+  { prefix: '--fluid-type-', heading: 'Type scale', sample: 'type', note: 'Primitives, used directly. Resize the window to see each step grow between a 360px and a 1240px viewport.' },
+  { prefix: '--fluid-space-', heading: 'Space scale', sample: 'space', note: 'Primitives, used directly. Each bar is as long as the space it names, and also grows with the viewport.' },
+  { prefix: '--radius', heading: 'Radius', sample: 'radius', note: 'Semantic.' },
+  { prefix: '--border-', heading: 'Borders', sample: 'border', note: 'Semantic.' },
+  { prefix: '--focus-ring-', heading: 'Focus ring', sample: 'focus', note: 'Semantic. Both samples show the same ring: these two tokens make it together.' },
+];
+
+const grouped = groups.map((group) => ({
+  ...group,
+  tokens: declarations.filter(({ name }) => name.startsWith(group.prefix)),
+}));
+
+// Anything no group claims still gets listed, so a token with a new prefix is never silently missing.
+const other = declarations.filter(({ name }) => !groups.some(({ prefix }) => name.startsWith(prefix)));
+if (other.length > 0) {
+  grouped.push({ prefix: '', heading: 'Other', sample: 'none', note: 'Tokens with a prefix this page has no group for yet.', tokens: other });
+}
+
+const sampleStyle = (sample: Sample, name: string) => {
+  const token = `var(${name})`;
+  switch (sample) {
+    case 'colour': return `background-color: ${token}`;
+    case 'font': return `font-family: ${token}`;
+    case 'weight': return `font-weight: ${token}`;
+    case 'line-height': return `line-height: ${token}`;
+    case 'type': return `font-size: ${token}`;
+    case 'space': return `inline-size: ${token}`;
+    case 'radius': return `border-radius: ${token}`;
+    case 'border': return `border-width: ${token}`;
+    case 'focus': return 'outline: var(--focus-ring-width) solid var(--color-link); outline-offset: var(--focus-ring-offset)';
+    case 'none': return undefined;
+  }
+};
+
+// Text for the samples that need some. The others are empty boxes.
+const sampleText: Partial<Record<Sample, string>> = {
+  font: 'The quick brown fox jumps over the lazy dog',
+  weight: 'Aa',
+  'line-height': 'Two lines of text, to show the space between them.',
+  type: 'Aa',
+};
+
+const codeSample = `.example {
+  border: var(--border-thin) solid var(--color-hr);
+  border-radius: var(--radius);
+}`;
+
+const title = 'Design system';
+const description = 'The design tokens, elements and utilities this site is built from.';
+---
+
+<BaseLayout title={title} description={description} noindex>
+  <p>Every design token in <code>src/styles/tokens.css</code>, drawn with its live value, then the plain elements and utility classes they style. The list is read from the stylesheet when the site is built, so it's always complete.</p>
+  <p>The tokens are organised in tiers, and more can be added as the site needs them. Today there are three. <dfn>Primitives</dfn> are raw values: the palette and the fluid scales. <dfn>Semantic</dfn> tokens say what a value is for, and are what the stylesheets use. <dfn>Component</dfn> tokens belong to a single component, so they live in that component's styles and aren't listed here; the banner at the top of the page uses three of them for its amber colours.</p>
+
+  {grouped.map(({ heading, note, sample, tokens }) => (
+    <section class="flow">
+      <h2>{heading}</h2>
+      <p>{note}</p>
+      <dl class="tokens">
+        {tokens.map(({ name, value }) => (
+          <div class="token">
+            <dt><code>{name}</code></dt>
+            {sample !== 'none' && (
+              <dd class={`sample sample-${sample}`} style={sampleStyle(sample, name)} aria-hidden="true">{sampleText[sample]}</dd>
+            )}
+            <dd class="value"><code>{value}</code></dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  ))}
+
+  <section class="flow">
+    <h2>Elements</h2>
+    <p>Plain HTML, styled by <code>base.css</code> with no classes. The page title is the only <code>h1</code>; each section heading here is an <code>h2</code>, the level page and post bodies start at.</p>
+    <p>A paragraph of body text with <a href="/design-system/">a link</a>, some <code>inline code</code>, <strong>strong importance</strong> and <em>stress emphasis</em>.</p>
+    <ul>
+      <li>An unordered list item</li>
+      <li>Another, to show the spacing between them</li>
+    </ul>
+    <Code code={codeSample} lang="css" />
+    <hr />
+  </section>
+
+  <section class="flow">
+    <h2>Utilities</h2>
+    <p>Single-purpose classes from <code>utilities.css</code>. They sit in a later cascade layer than components, so they win when both apply.</p>
+    <h3><code>.flow</code></h3>
+    <div class="flow demo-box">
+      <p>Each child after the first gets the same space above it.</p>
+      <p>So spacing only ever appears between items.</p>
+      <p>Never before the first or after the last.</p>
+    </div>
+    <h3><code>.italic</code> and <code>.bolder</code></h3>
+    <p><span class="italic">Italic as styling only</span>, <span class="bolder">one step bolder than its parent</span>, and <span class="italic bolder">both together</span>, as on a post's "Updated:" label.</p>
+    <h3><code>.visually-hidden</code></h3>
+    <p>This sentence ends with words only screen readers announce.<span class="visually-hidden"> These are those words.</span></p>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Wrapped in `@layer components`: Astro's scoped styles are otherwise unlayered, and unlayered
+     CSS beats every layer. The wrapper keeps the cascade order from src/styles/index.css true. */
+  @layer components {
+    /* A description list: each token's name is the term, its sample and value the descriptions.
+       reset.css already removes the <dd> margin. Each token is a row that wraps onto more lines
+       when the page is narrow. */
+    .tokens {
+      display: grid;
+      gap: var(--fluid-space-xs-s);
+    }
+
+    .token {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5em 1em;
+    }
+
+    dt {
+      flex: 0 0 14em;
+      max-inline-size: 100%;
+    }
+
+    /* The longest values are `clamp()` expressions, which have nowhere to break on a phone */
+    .value {
+      font-size: var(--fluid-type--1);
+      overflow-wrap: anywhere;
+    }
+
+    /* Boxes for the samples that have no text, outlined so a white or black swatch still shows */
+    .sample-colour,
+    .sample-radius,
+    .sample-border,
+    .sample-focus {
+      inline-size: 3em;
+      block-size: 3em;
+      border: var(--border-thin) solid var(--color-hr);
+    }
+
+    /* The radius sample needs a corner to round, so it's filled rather than outlined */
+    .sample-radius {
+      background-color: var(--color-link);
+      border: 0;
+    }
+
+    /* The token sets the width; this makes the border visible */
+    .sample-border {
+      border-style: solid;
+      border-color: var(--color-body);
+    }
+
+    .sample-space {
+      block-size: 1em;
+      background-color: var(--color-link);
+    }
+
+    .sample-line-height {
+      max-inline-size: 14em;
+    }
+
+    .demo-box {
+      padding: var(--fluid-space-xs-s);
+      border: var(--border-thin) dashed var(--color-hr);
+      border-radius: var(--radius);
+    }
+  }
+</style>

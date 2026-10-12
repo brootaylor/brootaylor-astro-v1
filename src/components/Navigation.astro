@@ -4,10 +4,9 @@
 // and the list on src/pages/offline.astro.
 //
 // Every href ends in a slash, matching the directories static output writes. Netlify 301s the
-// slashless form, so `/about` would cost an extra round trip on every click.
+// slashless form, so `/posts` would cost an extra round trip on every click.
 const links = [
   { href: '/', label: 'Home' },
-  { href: '/about/', label: 'About' },
   { href: '/posts/', label: 'Posts' },
 ];
 

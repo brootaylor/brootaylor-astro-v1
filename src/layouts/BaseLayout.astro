@@ -14,9 +14,9 @@ import '../styles/index.css';
 // The Open Graph type (https://ogp.me/#types): how a page is described when it's shared. Each
 // type has its own extra properties, so the type and the data it needs travel together in one
 // `og` prop, and the <head> below renders one block per type. "website" is the default and has
-// no extra properties. "profile" (the homepage and the About page, which are about a person) takes
-// its name from src/site.ts, so it needs no data either. "article" (every post, via PostsLayout)
-// carries its dates.
+// no extra properties. "profile" (the homepage, which is about a person) takes its name from
+// src/site.ts, so it needs no data either. "article" (every post, via PostsLayout) carries its
+// dates.
 //
 // To support a new type: add its shape to this union, then a block for its properties in the
 // <head>, after the "article" one. ogp.me lists each type's properties; all are optional there.
@@ -33,8 +33,8 @@ interface Props {
   article?: boolean;
 }
 
-// `noindex` keeps a page out of search results; only the offline and 404 pages use it. Every other page
-// gets an explicit "index, follow".
+// `noindex` keeps a page out of search results; only the offline, 404 and design system pages
+// use it. Every other page gets an explicit "index, follow".
 //
 // `article` decides the page's document structure, and is separate from `og` on purpose:
 // one is how a page is described when shared, the other is what its markup means. Set it on
@@ -44,8 +44,7 @@ interface Props {
 //
 // To make a page an article, add `article` to its <BaseLayout> (shorthand for `article={true}`,
 // like `noindex`). Anything given `slot="meta"` goes in the article's <header>, under the <h1>;
-// leave it out and the header holds just the <h1>. src/pages/index.astro and src/pages/about.astro
-// are working examples:
+// leave it out and the header holds just the <h1>. src/pages/index.astro is a working example:
 //
 //   <BaseLayout title={title} article>
 //     <p slot="meta">Optional: shown in the article's header, under the title.</p>
@@ -81,8 +80,9 @@ const pageTitle = title === siteName ? siteName : `${title} — ${siteName}`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
 // An article's `article:author` is a URL, not a name: it points at a "profile" page, which is
-// what the About page is. If that page ever moves, update this.
-const authorUrl = new URL('/about/', Astro.site);
+// what the homepage is (it passes `og={{ type: 'profile' }}`). If a separate profile page is ever
+// added, point this at it.
+const authorUrl = new URL('/', Astro.site);
 ---
 
 <!doctype html>
@@ -100,7 +100,8 @@ const authorUrl = new URL('/about/', Astro.site);
     <meta name="description" content={description}>
     {/* Every page states its robots directive outright. "index, follow" is what a crawler assumes
         when the tag is absent, so on an indexed page it changes nothing; it's there to make the
-        intent explicit. A `noindex` page (only the offline and 404 pages) is kept out of search results. */}
+        intent explicit. A `noindex` page (only the offline, 404 and design system pages) is kept
+        out of search results. */}
     <meta name="robots" content={noindex ? 'noindex' : 'index, follow'}>
 
     {/* The cascade layer order for the whole site: later layers beat earlier ones, regardless of

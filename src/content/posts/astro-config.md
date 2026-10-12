@@ -2,7 +2,7 @@
 title: "How this Astro site is put together"
 description: "A tour of the config and architecture behind this site: a tiny Astro config, content collections, layouts, a feed, a sitemap and a build that ships no third party code."
 date: 2026-09-14T20:41:08
-updated: 2026-10-12T09:40:18
+updated: 2026-10-12T21:11:44
 draft: false
 ---
 
@@ -60,7 +60,7 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      filter: (page) => !page.endsWith('/rss.xml') && !page.endsWith('/offline/'),
+      filter: (page) => !page.endsWith('/rss.xml') && !page.endsWith('/offline/') && !page.endsWith('/design-system/'),
       serialize: addPostLastmod,
     }),
     serviceWorker(),
@@ -68,7 +68,7 @@ export default defineConfig({
 });
 ```
 
-`site` is the production URL, used only to build absolute URLs for the sitemap, the feed and the canonical and Open Graph tags. It doesn't affect the dev server, which still serves `localhost:4321`. The sitemap filter drops `/rss.xml`, because the feed is for readers rather than crawlers, and the offline page, which only the service worker ever shows. `serialize` is what adds a `<lastmod>` to posts, and `serviceWorker()` is a small integration of my own (more on both below).
+`site` is the production URL, used only to build absolute URLs for the sitemap, the feed and the canonical and Open Graph tags. It doesn't affect the dev server, which still serves `localhost:4321`. The sitemap filter drops `/rss.xml`, because the feed is for readers rather than crawlers, the offline page, which only the service worker ever shows, and the [design system](/posts/css-design-tokens/) reference page, which is for working on the site rather than for search results. `serialize` is what adds a `<lastmod>` to posts, and `serviceWorker()` is a small integration of my own (more on both below).
 
 ### How the CSS and scripts are shipped
 
@@ -100,7 +100,7 @@ Dates work the same way. One small helper formats them for display and another p
 
 `BaseLayout` owns the entire HTML document: the `<head>`, the header, the `<main>` wrapper, the `<h1>` and the footer. A post layout wraps it and maps frontmatter onto its props. Because the layout renders the `<h1>` from the title, page and post bodies start at `<h2>`.
 
-The head is built from a small `site.ts` file holding the site name, description and locale. It's the single home for those strings, and the RSS feed reads from it too, so the two can't disagree. Canonical and `og:url` are derived from the current path, so there's nothing to pass per page. There's no `og:image` yet, because nothing I have is suitable.
+The head is built from a small `site.ts` file holding the site name, description, language, locale and my name. It's the single home for those strings, and the RSS feed reads from it too, so the two can't disagree. Canonical and `og:url` are derived from the current path, so there's nothing to pass per page. There's no `og:image` yet, because nothing I have is suitable.
 
 Navigation is a hardcoded list of links in a component. There's deliberately no hamburger menu: the links wrap onto a second line rather than overflowing, so it works at any width with no JavaScript.
 
@@ -130,8 +130,9 @@ Because those hashed files never change, they're kept across deploys and only do
 
 ## Styling and theming
 
-The CSS is plain native CSS, split into partials and ordered with cascade layers. Colours are `light-dark()` pairs written in `oklch()` that follow the OS with no JavaScript, with a theme toggle layered on top as an enhancement. Type and spacing scale fluidly with `clamp()`, and moving between pages fades with native view transitions. Each of those has its own post:
+The CSS is plain native CSS, split into partials and ordered with cascade layers. Colours are `light-dark()` pairs written in `oklch()` that follow the OS with no JavaScript, with a theme toggle layered on top as an enhancement. Type and spacing scale fluidly with `clamp()`, and moving between pages fades with native view transitions. The design values come from tokens organised in tiers, with a reference page that lists them. Each of those has its own post:
 
+- [A design system with CSS custom properties](/posts/css-design-tokens/)
 - [Light and dark theming with light-dark()](/posts/css-light-dark-theming/)
 - [Fluid type and spacing with clamp()](/posts/css-clamp-fluid-type/)
 - [Taming the cascade with @layer](/posts/css-cascade-layers/)
@@ -147,10 +148,4 @@ There's no `@astrojs/netlify` adapter. It's for server rendering, and this build
 
 The CSS file name includes a content hash, so a URL never changes what it contains. `netlify.toml` takes advantage of that and tells browsers to cache anything under `/_astro/` for a year, as `immutable`. When the CSS changes, so does the name, and everyone gets the new file. The service worker is the opposite: its name never changes, so the browser checks the server for a new one on every visit, and it's served `no-cache` to match.
 
-Security headers live in `netlify.toml` too. The Content Security Policy needs `'unsafe-inline'`, because the small theme script in the `<head>` has to be inline to run before the first paint, and the cascade layer order statement has to stay an inline style. The service worker registration is inline too, though that one's a choice rather than a necessity. Hashes would break on every edit, and nonces need a server. The other directives still earn their place, blocking things like framing and form hijacking.
-
----
-
-## Why bother writing it down
-
-A site this small is easy to reason about, and that makes the next experiment cheaper to try. Anything new has to justify itself, because there's no big pile of config to hide behind.
+Security headers live in `netlify.toml` too. The Content Security Policy needs `'unsafe-inline'`, because the small theme script in the `<head>` has to be inline to run before the first paint, and the cascade layer order statement has to stay an inline style. Highlighted code blocks and the token samples on the design system page also carry inline `style` attributes, which need it too. The service worker registration is inline too, though that one's a choice rather than a necessity. Hashes would break on every edit, and nonces need a server. The other directives still earn their place, blocking things like framing and form hijacking.
