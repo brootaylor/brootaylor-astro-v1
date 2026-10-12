@@ -2,10 +2,11 @@
 title: "Page transitions with native view transitions"
 description: "A cross-page fade, a header and footer that stay put, and a smoother theme switch, all with native view transitions and no router."
 date: 2026-10-07T20:34:12
+updated: 2026-10-12T09:40:18
 draft: false
 ---
 
-Remember that empty `transitions` layer I declared at the end of the cascade layers post? It's finally got something in it. This is the page transitions write-up I promised, and it turned out to be a lot less code than I expected. 🤔
+This site's page transitions live in the `transitions` layer, the last one in the order from the [cascade layers post](/posts/css-cascade-layers/). It turned out to be a lot less code than I expected. 🤔
 
 The goal was modest: when you click from one page to another, fade between them rather than blinking. No router, no library, and no JavaScript for the navigation itself.
 
@@ -34,16 +35,18 @@ A plain fade has a small flaw. The header and footer are identical on every page
 Giving an element a `view-transition-name` lifts it out of the page snapshot and animates it separately. Because it looks the same before and after, it simply stays where it is while the content between them fades:
 
 ```css
-header {
+body > header {
   view-transition-name: site-header;
 }
 
-footer {
+body > footer {
   view-transition-name: site-footer;
 }
 ```
 
-I put these in `transitions.css` rather than in the components, so everything to do with transitions lives in one file.
+The `body >` matters. A post has a `<header>` of its own inside its `<article>`, and a transition name has to be unique on the page: if two elements share one, the browser skips the whole transition. So only the site's own header and footer get a name.
+
+These live in `transitions.css` rather than in the components, so everything to do with transitions is in one file.
 
 ---
 
@@ -77,29 +80,7 @@ The toggle then calls `withViewTransition(applyTheme)`, where `applyTheme` is th
 
 ---
 
-## The gotcha, again from the build
-
-Once more, this one only showed up by looking at the build output rather than the dev server.
-
-By default, Astro inlines a stylesheet into the HTML only while it's small, under about 4 kB. Adding `transitions.css` nudged the bundle over that line, and the build quietly switched from inline CSS to a separate file. Nothing broke. But it meant the way the site shipped its CSS had changed without me deciding anything.
-
-My first instinct was to force it back inline. Then I thought about it properly: I'd rather have an external file anyway. I'll keep adding CSS to this site, I don't want it sitting in every HTML document, and a separate file with a hashed name can be cached once and reused on every page. So I made it a decision rather than an accident:
-
-```js
-build: {
-  inlineStylesheets: 'never',
-},
-```
-
-Because the file name changes whenever the contents do, I also told Netlify it can be cached for a year, in `netlify.toml`.
-
-Lesson learnt, same as last time: after adding CSS, check what the build actually emits.
-
----
-
 ## Still to try
-
-I haven't given this a proper look across browsers yet, so treat it as working on paper for now.
 
 There are two bigger ideas I've left for later:
 

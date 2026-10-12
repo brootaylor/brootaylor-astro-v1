@@ -2,7 +2,7 @@
 title: "How this Astro site is put together"
 description: "A tour of the config and architecture behind this site: a tiny Astro config, content collections, layouts, a feed, a sitemap and a build that ships no third party code."
 date: 2026-09-14T20:41:08
-updated: 2026-10-10T16:21:34
+updated: 2026-10-12T09:40:18
 draft: false
 ---
 
@@ -74,11 +74,11 @@ export default defineConfig({
 
 These settings are there because I'd rather the site's CSS and JavaScript lived in external files than be scattered through the HTML. Each one does a specific job:
 
-- **`inlineStylesheets: 'never'`.** By default Astro inlines a stylesheet into every page while it's under about 4 kB, and links to a file once it's bigger. That means the way the site ships its CSS can flip the moment the stylesheet grows, which is exactly what happened when I added page transitions. I'd rather have an external file anyway, since the CSS will keep growing and a hashed file is cached once and reused on every page. So I made it an explicit choice.
+- **`inlineStylesheets: 'never'`.** By default Astro inlines a stylesheet into every page while it's under about 4 kB, and links to a file once it's bigger, so the way the site ships its CSS would flip as the stylesheet grows. This makes it always an external file. The CSS will keep growing, and a hashed file is cached once and reused on every page.
 - **`cssCodeSplit: false`.** Out of the box the build also splits out a small extra file for each page's own styles. Mine were around 95 bytes each, which isn't worth a second request. Turning splitting off merges everything into one file, so every page makes a single CSS request.
 - **`assetsInlineLimit: 0`.** The same size-based inlining applies to bundled scripts, so a small script would be inlined into every page until it grew past about 4 kB. Setting the limit to zero keeps them external from the start. It doesn't touch the small theme script in the `<head>`, which is marked inline on purpose.
 - **`entryFileNames`.** Astro names a script after the component that holds it, so the theme toggle's script would be called something like `ThemeToggle.astro_astro_type_script_index_0_lang.<hash>.js`. This function trims it to `ThemeToggle.<hash>.js`. It also names the site-wide script, `src/scripts/main.ts`, as `main`.
-- **`assetFileNames`.** The merged file is called `style` by default. I wanted `main`, to match the script, and there's no simple setting for that, so this function sets it. It replaces Astro's own file naming, so it also has to repeat the plain pattern for everything else. It matches on Vite's default name, so a future Vite change would quietly revert the file to `style`. Nothing would break, but it's worth knowing.
+- **`assetFileNames`.** The merged file is called `style` by default. I wanted `main`, to match the script, and there's no simple setting for that, so this function sets it. It replaces Astro's own file naming, so it also has to repeat the plain pattern for everything else.
 
 One thing stays inline on purpose: the line that declares the cascade layer order. The production build drops it from the external file, so it has to sit in the `<head>` as an inline style (the [cascade layers post](/posts/css-cascade-layers/) has the full story).
 
@@ -90,7 +90,7 @@ Posts are Markdown files in `src/content/posts/`, loaded by Astro's glob loader 
 
 The bit I'm happiest with is a tiny helper, `getPublishedPosts()`. It's the one place that decides what counts as a public post: not a draft, newest first. The listing page, the individual post pages and the RSS feed all go through it.
 
-That means a draft isn't hidden so much as never built. There's no page, no listing entry, no feed item and no sitemap entry. The only way to see one is `npm run dev`. I'd originally filtered drafts in one place and found out they were still reachable by guessing the URL, so now there's one rule instead of several that could drift apart.
+That means a draft isn't hidden so much as never built. There's no page, no listing entry, no feed item and no sitemap entry. The helper includes drafts only under `npm run dev`, so that's the one place a draft can be seen. One rule, in one place, means no surface can forget to apply it.
 
 Dates work the same way. One small helper formats them for display and another produces the machine readable version, so the listing and the post page can't disagree. A date can be a bare day or carry a time. I write a time as it reads on my clock in London, with no time zone, and the build works out whether that was BST or GMT, so the page shows exactly what I typed, like `7 October 2026 @ 4:00 PM`. A bare day is read as midnight UTC, so it's formatted in UTC. Formatting it in the build machine's own time zone could show the previous day.
 
@@ -100,7 +100,7 @@ Dates work the same way. One small helper formats them for display and another p
 
 `BaseLayout` owns the entire HTML document: the `<head>`, the header, the `<main>` wrapper, the `<h1>` and the footer. A post layout wraps it and maps frontmatter onto its props. Because the layout renders the `<h1>` from the title, page and post bodies start at `<h2>`.
 
-The head is built from a small `site.ts` file holding the site name, description and locale. It's the single home for those strings, and the RSS feed reads from it too. Those strings had already drifted apart once when they were duplicated, so now they can't. Canonical and `og:url` are derived from the current path, so there's nothing to pass per page. There's no `og:image` yet, because nothing I have is suitable.
+The head is built from a small `site.ts` file holding the site name, description and locale. It's the single home for those strings, and the RSS feed reads from it too, so the two can't disagree. Canonical and `og:url` are derived from the current path, so there's nothing to pass per page. There's no `og:image` yet, because nothing I have is suitable.
 
 Navigation is a hardcoded list of links in a component. There's deliberately no hamburger menu: the links wrap onto a second line rather than overflowing, so it works at any width with no JavaScript.
 
@@ -110,7 +110,7 @@ Browser JavaScript follows the same idea as the CSS. A component that needs a sc
 
 ## The feed and the sitemap
 
-The RSS feed is a static endpoint that carries full post content, not just titles. I render each post through Astro's Container API rather than a separate Markdown parser, so the feed gets exactly the same HTML as the site, including syntax highlighted code blocks. It costs one dependency instead of three. The catch is that the API is still marked experimental, so a future Astro update is the first place I'd look if the build breaks.
+The RSS feed is a static endpoint that carries full post content, not just titles. I render each post through Astro's Container API rather than a separate Markdown parser, so the feed gets exactly the same HTML as the site, including syntax highlighted code blocks. It costs one dependency instead of three. The API is still marked experimental in Astro.
 
 The sitemap integration writes `sitemap-index.xml` and `sitemap-0.xml`. The index filename isn't configurable, so a Netlify redirect covers `/sitemap.xml` for any crawler that guesses it, and `robots.txt` points at the real file with an absolute URL.
 
@@ -122,9 +122,9 @@ Posts also get a `<lastmod>`, which is their `updated` date, or their `date` if 
 
 There's a service worker, so pages you've visited still load without a connection, and a simple offline page covers the ones you haven't. It's hand-written rather than built with a library like Workbox, because it only needs two caches and a handful of rules.
 
-The awkward part is that the CSS and JavaScript file names carry a hash that changes whenever their contents do, so the worker can't have a hand-written list of files to store. A small integration of my own runs once the build is done, reads the real file names out of `dist/`, and writes them into the worker along with a version. The version is a hash of the built pages, so I never have to remember to bump it. A deploy that changes nothing produces an identical worker.
+The awkward part is that the CSS and JavaScript file names carry a hash that changes whenever their contents do, so the worker can't have a hand-written list of files to store. A small integration of my own runs once the build is done, reads the real file names out of `dist/`, and writes them into the worker along with a version. The version is a hash of the site's contents, so I never have to remember to bump it. A deploy that changes nothing produces an identical worker.
 
-Because those hashed files never change, they're kept across deploys and only downloaded once. Pages are fetched fresh when the network's there, and the cached copy is used when it isn't. The worker is only registered in a production build, so it can never hide my changes behind a cache while I'm working on the site.
+Because those hashed files never change, they're kept across deploys and only downloaded once. Pages are fetched fresh when the network's there, and the cached copy is used when it isn't. The worker is only registered in a production build, so it can never hide my changes behind a cache while I'm working on the site. The whole thing is broken down, with code, in [Reading offline with a service worker](/posts/service-worker/).
 
 ---
 
@@ -145,7 +145,7 @@ The CSS is plain native CSS, split into partials and ordered with cascade layers
 
 There's no `@astrojs/netlify` adapter. It's for server rendering, and this build is static, so it would add a dependency and a server runtime for nothing.
 
-The CSS file name includes a content hash, so a URL never changes what it contains. `netlify.toml` takes advantage of that and tells browsers to cache anything under `/_astro/` for a year, as `immutable`. When the CSS changes, so does the name, and everyone gets the new file. The service worker is the opposite: its name never changes, so it's served `no-cache`, and the browser checks for a new one on every visit.
+The CSS file name includes a content hash, so a URL never changes what it contains. `netlify.toml` takes advantage of that and tells browsers to cache anything under `/_astro/` for a year, as `immutable`. When the CSS changes, so does the name, and everyone gets the new file. The service worker is the opposite: its name never changes, so the browser checks the server for a new one on every visit, and it's served `no-cache` to match.
 
 Security headers live in `netlify.toml` too. The Content Security Policy needs `'unsafe-inline'`, because the small theme script in the `<head>` has to be inline to run before the first paint, and the cascade layer order statement has to stay an inline style. The service worker registration is inline too, though that one's a choice rather than a necessity. Hashes would break on every edit, and nonces need a server. The other directives still earn their place, blocking things like framing and form hijacking.
 

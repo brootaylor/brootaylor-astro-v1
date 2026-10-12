@@ -69,14 +69,14 @@ export const serviceWorker = (): AstroIntegration => ({
       // the quotes too means a mention in a comment can never be replaced by mistake. The version
       // goes in as a string; the manifest replaces its quotes entirely and lands as an object
       // literal (JSON is valid JS). Functions as replacements, so a `$` is never read as a pattern.
-      if (!template.includes("'__VERSION__'") || !template.includes("'__MANIFEST__'")) {
-        throw new Error("service-worker: sw.js is missing its '__VERSION__' or '__MANIFEST__' placeholder");
+      if (!template.includes("'__swVersion__'") || !template.includes("'__swManifest__'")) {
+        throw new Error("service-worker: sw.js is missing its '__swVersion__' or '__swManifest__' placeholder");
       }
       writeFileSync(
         join(dist, 'sw.js'),
         template
-          .replace("'__VERSION__'", () => `'${version}'`)
-          .replace("'__MANIFEST__'", () => JSON.stringify(manifest))
+          .replace("'__swVersion__'", () => `'${version}'`)
+          .replace("'__swManifest__'", () => JSON.stringify(manifest))
       );
     },
   },

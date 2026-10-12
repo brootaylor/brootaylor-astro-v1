@@ -1,11 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { getPublishedPosts } from '../utils/posts';
 
 // The page the service worker shows when a visit can't be served from the network or its cache.
 // It is stored when the worker installs (see src/integrations/service-worker.ts), and it has no
 // business in search results, so it opts out with `noindex` and is left out of the sitemap.
 // The links are the pages the worker stores on install: keep them in step with `precachedPages`
 // in that integration.
+//
+// "Posts you've read" is built with every published post in it, and ships `hidden`. The script
+// below keeps only the posts the worker has a copy of and then shows the list, so a visitor sees
+// exactly what they can still open. It relies on JavaScript, which is fine: this page only ever
+// appears through the service worker, and that needs JavaScript too.
+const posts = await getPublishedPosts();
+
 const title = "You're offline";
 ---
 
@@ -17,5 +26,36 @@ const title = "You're offline";
     <li><a href="/about/">About</a></li>
     <li><a href="/posts/">Posts</a></li>
   </ul>
-  <p>Any post you've already read should be there too.</p>
+  <div class="read-posts flow" hidden>
+    <h2>Posts you've read</h2>
+    <PostList posts={posts} />
+  </div>
 </BaseLayout>
+
+<script>
+  // Keeps the posts the service worker has a copy of, removes the rest, and shows the list if any
+  // are left. `caches.match()` searches every cache, so this needs no knowledge of the worker's
+  // cache names. A link's `href` is the absolute URL with its trailing slash, the same form the
+  // worker stores pages under (`pageKey` in src/service-worker/sw.js).
+  const readPosts = document.querySelector('.read-posts');
+
+  // The `instanceof` check narrows the type, and skips everything if the markup is ever missing.
+  // No Cache API (an insecure context, say) means nothing can be cached, so the list stays hidden.
+  if (readPosts instanceof HTMLElement && 'caches' in window) {
+    const items = [...readPosts.querySelectorAll('li')];
+    const cached = await Promise.all(
+      items.map(async (item) => {
+        const link = item.querySelector('a');
+        return link !== null && (await caches.match(link.href)) !== undefined;
+      })
+    );
+
+    // Removed rather than hidden: `.flow` spaces each item from the one before it, and a hidden
+    // item still counts as "the one before", which would leave a gap above the first one shown.
+    items.forEach((item, index) => {
+      if (!cached[index]) item.remove();
+    });
+
+    if (cached.includes(true)) readPosts.hidden = false;
+  }
+</script>

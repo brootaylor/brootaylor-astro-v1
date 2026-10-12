@@ -2,11 +2,11 @@
 // The posts listing: every published post, newest first, each with its date.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-// Date helpers, so the listing and the post pages format dates identically.
-import { formatDate, toDateTime } from '../../utils/date';
+// The list markup and its styles, shared with the offline page.
+import PostList from '../../components/PostList.astro';
 
-// Drafts filtered out and sorted newest first. Shared with the post pages and the RSS feed, so
-// the three can't drift.
+// Drafts filtered out of builds (kept under `npm run dev`) and sorted newest first. Shared with
+// the post pages and the RSS feed, so the three can't drift.
 import { getPublishedPosts } from '../../utils/posts';
 
 const sortedPosts = await getPublishedPosts();
@@ -16,25 +16,5 @@ const title = 'Posts';
 
 <BaseLayout title={title}>
   <p>Here are some posts.</p>
-  <ul class="flow">
-    {sortedPosts.map((post) => (
-      <li>
-        {/* Trailing slash to match the directory static output writes, as the feed does. */}
-        <a href={`/posts/${post.id}/`}>{post.data.title}</a>
-        <time datetime={toDateTime(post.data.date)}>{formatDate(post.data.date)}</time>
-      </li>
-    ))}
-  </ul>
+  <PostList posts={sortedPosts} />
 </BaseLayout>
-
-<style>
-  /* Wrapped in `@layer components`: Astro's scoped styles are otherwise unlayered, and unlayered
-     CSS beats every layer. The wrapper keeps the cascade order from src/styles/index.css true. */
-  @layer components {
-    /* The date sits under its link rather than beside it, so long titles don't push it out of view */
-    time {
-      display: block;
-      font-size: var(--fluid-type--1);
-    }
-  }
-</style>

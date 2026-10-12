@@ -22,8 +22,8 @@
 
 // Filled in by the integration. `version` becomes a short hash; `manifest` becomes an object,
 // `{ assets, pages, offline }`, of URL paths to precache.
-const version = '__VERSION__';
-const manifest = '__MANIFEST__';
+const version = '__swVersion__';
+const manifest = '__swManifest__';
 
 const assetsCacheName = 'playground-assets';
 const pagesCacheName = `playground-pages@${version}`;

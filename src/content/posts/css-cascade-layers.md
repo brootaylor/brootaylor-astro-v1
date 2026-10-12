@@ -1,8 +1,8 @@
 ---
 title: "Taming the cascade with @layer"
-description: "Splitting a single stylesheet into cascade layers, and the production build gotcha that only showed up after I'd shipped it."
+description: "Splitting a single stylesheet into cascade layers, and keeping the layer order intact in a production build."
 date: 2026-10-06T09:47:23
-updated: 2026-10-08T11:57:48
+updated: 2026-10-12T09:40:18
 draft: false
 ---
 
@@ -34,23 +34,17 @@ Read it left to right, later wins. Reset is deliberately the weakest, so anythin
 
 ---
 
-## Where it got interesting
+## Three things to know
 
-This is the bit I'd have missed if I'd stopped at "it works on my machine".
+**Unlayered CSS beats every layer.** Astro's scoped component `<style>` blocks aren't in any layer by default, so they'd silently win over everything, utilities included. So each component's styles are wrapped in `@layer components { … }`.
 
-**Unlayered CSS beats every layer.** Astro's scoped component `<style>` blocks aren't in any layer by default, so they'd silently win over everything, utilities included. The fix is to wrap each component's styles in `@layer components { … }`. Easy, once you know.
-
-**The minifier ate my layer order.** I'd put that `@layer` order statement at the top of `index.css`, where it felt like it belonged. In dev, everything looked right. In a production build, the minifier merged and reordered the bundled styles and dropped the statement entirely. Layers then get ranked by whichever one the browser sees first, and my components ended up *below* the reset.
-
-Dev doesn't minify, so I'd never have spotted it by looking at the dev server. I only caught it by inspecting the built HTML. The fix is an inline style in the `<head>`, ahead of the stylesheet, which can't be reordered:
+**The order statement lives in the `<head>`, inline.** A production build's minifier merges and reorders the bundled styles, and drops a leading `@layer` order statement. Layers would then be ranked by whichever one the browser sees first, which put the components *below* the reset. The development server doesn't minify, so it only happens in a build. An inline style in the `<head>`, ahead of the stylesheet, can't be reordered:
 
 ```html
 <style is:inline>
   @layer reset, tokens, base, components, utilities, transitions;
 </style>
 ```
-
-Lesson learnt: with CSS, check the build, not just the dev server.
 
 **`!important` flips the order.** For `!important` declarations, layer priority is reversed, so the *earliest* layer wins. That sounds odd, but it's handy. The `prefers-reduced-motion` safety net lives in `reset`, so nothing later can accidentally switch motion back on.
 
@@ -62,6 +56,6 @@ A browser without `@layer` support gets unstyled but readable HTML. I'm fine wit
 
 ---
 
-## What's next
+## The transitions layer
 
-There's a `transitions` layer declared at the end of that list. It was empty when I first wrote this, and it isn't any more: page transitions live there now, using the native View Transitions API. I wrote that up in [Page transitions with native view transitions](/posts/css-page-transitions/).
+The `transitions` layer at the end of that list holds the site's page transitions, using the native View Transitions API. They're covered in [Page transitions with native view transitions](/posts/css-page-transitions/).

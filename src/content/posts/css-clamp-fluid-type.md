@@ -2,7 +2,7 @@
 title: "Fluid type and spacing with clamp()"
 description: "How a handful of clamp() values give the whole site a smoothly scaling type and spacing system, with no breakpoints."
 date: 2026-10-03T17:22:51
-updated: 2026-10-10T14:08:53
+updated: 2026-10-12T09:40:18
 draft: false
 ---
 
@@ -40,8 +40,6 @@ The scale itself is a modular one. On small screens each step is 1.2 times the l
 /* Step 3: 31.104px → 39.0625px */
 --fluid-type-3: clamp(1.944rem, 1.7405rem + 0.9044vw, 2.4414rem);
 ```
-
-I've left a comment above each step giving the range in pixels. The raw numbers mean nothing at a glance, and that comment is what I'll actually read in six months.
 
 One catch worth knowing: the values are interpolated as a set, so nudging a single number by hand will quietly break the scale. When I want to change it, I recalculate the lot.
 
@@ -87,9 +85,3 @@ body {
 You'll notice the preferred value isn't pure `vw`. The `rem` part is deliberate. A size based only on viewport width ignores the browser's zoom and the visitor's own text size setting, which is an accessibility problem. Keeping `rem` in the mix means people who bump their text size up still get bigger text.
 
 It's also why the min and max are in `rem` rather than `px`.
-
----
-
-## The honest bit
-
-Fluid type is one of those things where I'm still deciding how much I trust the numbers versus my own eyes. The maths says it's smooth. I've only eyeballed it in a few window widths so far, so I'll keep an eye on it as the site grows.
