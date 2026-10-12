@@ -2,6 +2,7 @@
 title: "Reading offline with a service worker"
 description: "How this site's hand-written service worker caches assets and pages, falls back to an offline page, and lists the posts you can still read."
 date: 2026-10-12T08:33:45
+updated: 2026-10-12T17:49:50
 draft: false
 ---
 
@@ -311,6 +312,14 @@ When a new worker activates, any pages cache with a different version is deleted
 A new worker installs alongside the old one, then waits until every tab of the site is closed before it takes over. There's deliberately no `skipWaiting()` to rush it.
 
 The reason is the asset clean-up. A new worker removes files the old build used, and a page still open in another tab could suddenly find its CSS gone. Waiting avoids that. The cost is that a deploy reaches you one visit later, and that's a fair trade.
+
+There's one step it does take on activating, though:
+
+```js
+await self.clients.claim();
+```
+
+That puts the page which installed the worker under its control straight away, so a first visit is handled from then on rather than from the next page. It's safe where `skipWaiting()` isn't, because it only takes over a page and never removes anything from under one. And since an updated worker only activates once every tab is closed, there's usually nothing for it to claim then, so in practice it acts on a first visit. The exception is a tab opened with a hard reload, which bypasses the worker altogether. Claiming that one is safe too, because it loaded the current files straight from the server.
 
 ---
 

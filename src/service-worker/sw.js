@@ -15,7 +15,8 @@
 // A deploy is detected by the browser re-fetching this file, which netlify.toml serves with
 // `no-cache`. The new worker then waits for every open tab to close before taking over. There is
 // deliberately no skipWaiting(): an old page still open would otherwise lose the assets the new
-// worker removes.
+// worker removes. It does call `clients.claim()` on activate, which is safe without the skip: it
+// only takes over a page, and never removes anything from under one.
 //
 // To retire the worker if a bad one ever ships, deploy a /sw.js that deletes every cache and
 // calls `registration.unregister()`.
@@ -187,6 +188,13 @@ addEventListener('activate', (event) => {
       // Starts the page request while the worker is still waking up, which trims the delay a
       // worker adds to a navigation.
       await self.registration.navigationPreload?.enable();
+      // Takes control of the page that registered the worker, so a first visit is handled from
+      // then on rather than from the next page. In practice it only acts on a first install:
+      // without skipWaiting(), an updated worker activates once no tab it would take over from is
+      // open. The exception is a tab opened with a hard reload, which bypasses the worker; that's
+      // safe to claim, because it loaded the current deploy's files. It runs after the clean-up,
+      // so a claimed page never sees a cache being emptied.
+      await self.clients.claim();
     })()
   );
 });
