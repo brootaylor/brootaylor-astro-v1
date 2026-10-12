@@ -18,7 +18,7 @@
 // worker removes.
 //
 // To retire the worker if a bad one ever ships, deploy a /sw.js that deletes every cache and
-// calls `registration.unregister()`. See CLAUDE.md.
+// calls `registration.unregister()`.
 
 // Filled in by the integration. `version` becomes a short hash; `manifest` becomes an object,
 // `{ assets, pages, offline }`, of URL paths to precache.
