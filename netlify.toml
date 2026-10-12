@@ -58,8 +58,11 @@
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # The service worker keeps one fixed name, so the browser has to ask the server whether it has
-# changed every time, or a deploy would never reach returning visitors. `no-cache` still allows
-# a cached copy, but only after revalidating it.
+# changed. Browsers already do that by default: a registration's `updateViaCache` defaults to
+# "imports", which fetches the worker script itself from the network on every update check,
+# whatever these headers say. This header makes it explicit, and keeps it true if the script is
+# ever read through the HTTP cache (`updateViaCache: 'all'`, say). `no-cache` still allows a
+# cached copy, but only after revalidating it.
 [[headers]]
   for = "/sw.js"
   [headers.values]

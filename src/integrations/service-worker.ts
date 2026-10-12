@@ -46,18 +46,24 @@ export const serviceWorker = (): AstroIntegration => ({
         throw new Error(`service-worker: expected these in the build but they are missing: ${missing.join(', ')}`);
       }
 
-      // The version is a hash of the worker itself, the asset list and every page. An unchanged
-      // site gives an unchanged worker, so nothing updates for no reason, and any edit (including
-      // to a post's prose) gives a new one, which replaces the pages cache.
+      const manifest = { assets, pages: precachedPages, offline: offlinePage };
+
+      // The version is a hash of the worker itself, the manifest, every page and the favicons. An
+      // unchanged site gives an unchanged worker, so nothing updates for no reason, and any edit
+      // (including to a post's prose) gives a new one, which replaces the pages cache. The favicons
+      // are hashed by content because their names never change: without this, a new icon alone
+      // would leave sw.js identical, and the worker would keep serving the old one from its cache.
+      // Files under /_astro/ need no such step: a change to one changes its name, which the
+      // manifest already covers.
       const template = readFileSync(templateUrl, 'utf8');
-      const hash = createHash('sha256').update(template);
+      const hash = createHash('sha256').update(template).update(JSON.stringify(manifest));
       for (const file of files.filter((name) => name.endsWith('.html'))) {
         hash.update(file).update(readFileSync(join(dist, file)));
       }
-      hash.update(assets.join('\n'));
+      for (const path of rootAssets) {
+        hash.update(path).update(readFileSync(join(dist, path)));
+      }
       const version = hash.digest('hex').slice(0, 10);
-
-      const manifest = { assets, pages: precachedPages, offline: offlinePage };
 
       // The placeholders are quoted strings, so the template is valid JS as it stands. Matching
       // the quotes too means a mention in a comment can never be replaced by mistake. The version

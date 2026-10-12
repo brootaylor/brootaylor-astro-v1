@@ -51,10 +51,14 @@ const pageKey = (urlString) => {
 // stored. Only a plain success is worth keeping.
 const isCacheable = (response) => response.ok && !response.redirected && response.type === 'basic';
 
-// `reload` skips the browser's own HTTP cache, so a precache never stores a stale copy of a
-// page or an unhashed favicon.
+// Fetches a file to precache, using the browser's own HTTP cache as far as it's safe to. A page or
+// an unhashed favicon is fetched with `no-cache`: the browser must check with the server, so a
+// stale copy is never stored, but an unchanged file costs a 304 rather than a second download.
+// A hashed /_astro/ file can't be stale, so it uses the HTTP cache as normal, which usually holds
+// it already: the page that registered the worker has just loaded it.
 const fetchFresh = async (path) => {
-  const response = await fetch(new Request(path, { cache: 'reload' }));
+  const cache = path.startsWith('/_astro/') ? 'default' : 'no-cache';
+  const response = await fetch(new Request(path, { cache }));
   if (!isCacheable(response)) {
     throw new Error(`Could not precache ${path}: ${response.status}${response.redirected ? ' (redirected)' : ''}`);
   }
@@ -192,11 +196,26 @@ addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  if (url.origin !== location.origin || neverIntercept.test(url.pathname)) return;
+  if (url.origin !== location.origin) return;
 
-  if (assetPaths.has(url.pathname)) {
+  const isNavigation = request.mode === 'navigate';
+  const isExcluded = neverIntercept.test(url.pathname);
+  const isAsset = assetPaths.has(url.pathname);
+
+  // With navigation preload on, the browser has already started fetching every navigation, these
+  // included. Leaving one unanswered would send it to the network a second time, so it's answered
+  // with the preload instead: straight through, nothing cached. Only reached by opening the feed,
+  // a sitemap or a file in the address bar.
+  if (isNavigation && (isExcluded || isAsset)) {
+    event.respondWith(Promise.resolve(event.preloadResponse).then((preloaded) => preloaded || fetch(request)));
+    return;
+  }
+
+  if (isExcluded) return;
+
+  if (isAsset) {
     event.respondWith(respondWithAsset(request));
-  } else if (request.mode === 'navigate') {
+  } else if (isNavigation) {
     event.respondWith(respondWithPage(event));
   }
 });
