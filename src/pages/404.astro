@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// The page shown for any URL that doesn't exist. Astro builds it as dist/404.html, not
+// dist/404/index.html, and Netlify serves that file, with a 404 status, for every path that has
+// nothing else to serve. So it appears at whatever URL was asked for, and its links must all be
+// root-relative (they are, as everywhere on the site).
+//
+// A plain page, not an article: it's a status message, not a piece of content. It has no business
+// in search results, so it opts out with `noindex`. @astrojs/sitemap leaves 404 pages out of the
+// sitemap by itself, so there's no filter for it in astro.config.mjs.
+//
+// The service worker needs nothing for this page: a 404 response isn't `ok`, so it's passed
+// through to the browser and never stored, and an unknown URL visited offline gets the offline
+// page instead.
+const title = 'Page not found';
+---
+
+<BaseLayout title={title} noindex>
+  <p>Sorry, there's nothing at this address. The link may be wrong, or the page may have moved or been removed.</p>
+  <p>Try the <a href="/">homepage</a>, or maybe have a look through the <a href="/posts/">posts</a>.</p>
+</BaseLayout>

@@ -53,7 +53,7 @@ draft: true
 
 ## Project structure
 
-- `src/pages/` — routes, including the posts listing and detail pages, the RSS endpoint and the offline page
+- `src/pages/` — routes, including the posts listing and detail pages, the RSS endpoint, the offline page and the 404 page
 - `src/layouts/` — `BaseLayout` (page shell) and `PostsLayout` (post-specific wrapper)
 - `src/components/` — `SkipLink`, `Header`, `Navigation`, `Footer`, `ThemeToggle`, `Message`
 - `src/content/posts/` — Markdown posts, defined as a content collection in `src/content.config.ts`

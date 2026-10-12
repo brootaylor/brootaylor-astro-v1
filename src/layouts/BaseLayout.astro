@@ -33,7 +33,7 @@ interface Props {
   article?: boolean;
 }
 
-// `noindex` keeps a page out of search results; only the offline page uses it. Every other page
+// `noindex` keeps a page out of search results; only the offline and 404 pages use it. Every other page
 // gets an explicit "index, follow".
 //
 // `article` decides the page's document structure, and is separate from `og` on purpose:
@@ -100,7 +100,7 @@ const authorUrl = new URL('/about/', Astro.site);
     <meta name="description" content={description}>
     {/* Every page states its robots directive outright. "index, follow" is what a crawler assumes
         when the tag is absent, so on an indexed page it changes nothing; it's there to make the
-        intent explicit. A `noindex` page (only the offline page) is kept out of search results. */}
+        intent explicit. A `noindex` page (only the offline and 404 pages) is kept out of search results. */}
     <meta name="robots" content={noindex ? 'noindex' : 'index, follow'}>
 
     {/* The cascade layer order for the whole site: later layers beat earlier ones, regardless of
