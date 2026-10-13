@@ -11,8 +11,9 @@ import { getPublishedPosts } from '../utils/posts';
 //
 // "Posts you've read" is built with every published post in it, and ships `hidden`. The script
 // below keeps only the posts the worker has a copy of and then shows the list, so a visitor sees
-// exactly what they can still open. It relies on JavaScript, which is fine: this page only ever
-// appears through the service worker, and that needs JavaScript too.
+// exactly what they can still open. It relies on JavaScript, which is fine: the page is meant to
+// appear through the service worker, which needs JavaScript too. Opened directly at /offline/
+// without JavaScript, the block just stays hidden.
 const posts = await getPublishedPosts();
 
 const title = "You're offline";

@@ -11,7 +11,8 @@ import { render } from 'astro:content';
 // at the changelog on upgrade.
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 
-// Shared with the listing and post pages so the draft filter and sort order can't drift apart.
+// Shared with the listing, post and offline pages so the draft filter and sort order can't drift
+// apart.
 import { getPublishedPosts } from '../utils/posts';
 
 // Shared with BaseLayout so the feed and the pages can't disagree on what the site is called.

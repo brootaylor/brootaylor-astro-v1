@@ -6,7 +6,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostList from '../../components/PostList.astro';
 
 // Drafts filtered out of builds (kept under `npm run dev`) and sorted newest first. Shared with
-// the post pages and the RSS feed, so the three can't drift.
+// the post pages, the RSS feed and the offline page, so none of them can drift.
 import { getPublishedPosts } from '../../utils/posts';
 
 const sortedPosts = await getPublishedPosts();

@@ -12,11 +12,12 @@
 //   changed is never downloaded twice. Only entries the new build no longer lists are removed.
 // - `pages` holds HTML and is replaced by every deploy that changes anything.
 //
-// A deploy is detected by the browser re-fetching this file, which netlify.toml serves with
-// `no-cache`. The new worker then waits for every open tab to close before taking over. There is
-// deliberately no skipWaiting(): an old page still open would otherwise lose the assets the new
-// worker removes. It does call `clients.claim()` on activate, which is safe without the skip: it
-// only takes over a page, and never removes anything from under one.
+// A deploy is detected by the browser re-fetching this file on its update checks, which it does
+// from the network by default (`updateViaCache` is "imports"); netlify.toml's `no-cache` on it is
+// belt and braces. The new worker then waits for every open tab to close before taking over.
+// There is deliberately no skipWaiting(): an old page still open would otherwise lose the assets
+// the new worker removes. It does call `clients.claim()` on activate, which is safe without the
+// skip: it only takes over a page, and never removes anything from under one.
 //
 // To retire the worker if a bad one ever ships, deploy a /sw.js that deletes every cache and
 // calls `registration.unregister()`.
@@ -40,8 +41,9 @@ const neverIntercept = /^\/(rss\.xml|robots\.txt|sitemap.*\.xml|sw\.js)$/;
 
 const assetPaths = new Set(manifest.assets);
 
-// A page's cache key: the path with a trailing slash, and no query string or hash. Navigation links
-// on the site mix `/posts` and `/posts/`, and a tracking parameter shouldn't make a second copy.
+// A page's cache key: the path with a trailing slash, and no query string or hash. The site's own
+// links all end in a slash, but one typed or followed from elsewhere may not: offline, `/posts`
+// still finds the stored `/posts/`. And a tracking parameter shouldn't make a second copy.
 const pageKey = (urlString) => {
   const { origin, pathname } = new URL(urlString);
   const isFile = /\.[^/]+$/.test(pathname);

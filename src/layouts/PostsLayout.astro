@@ -1,10 +1,15 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 
 // Date helpers, shared with the posts listing so both format identically.
 import { formatDate, toDateTime } from '../utils/date';
 
 // `frontmatter` is the post's validated data (`post.data`), passed in by src/pages/posts/[slug].astro.
+interface Props {
+  frontmatter: CollectionEntry<'posts'>['data'];
+}
+
 const { frontmatter } = Astro.props;
 ---
 

@@ -1,7 +1,8 @@
 ---
-// Theme control. Writing `data-theme` to <html> overrides the `color-scheme` declared in src/styles/tokens.css,
-// which is what every `light-dark()` token keys off — so nothing else needs to know this exists.
-// No stored choice means no attribute, and the OS preference applies with no JS involved at all.
+// Theme control. Writing `data-theme` to <html> overrides the `color-scheme` declared in
+// src/styles/tokens.css, which is what every `light-dark()` token keys off — so nothing else needs
+// to know this exists. No stored choice means no attribute, and the OS preference applies with no
+// JS involved at all.
 const options = [
   { value: 'system', label: 'System' },
   { value: 'light', label: 'Light' },
@@ -9,7 +10,8 @@ const options = [
 ];
 ---
 
-{/* Hidden until the script below reveals it, so a no-JS visitor isn't shown a control that can't work */}
+{/* Hidden until the script below reveals it, so a no-JS visitor isn't shown a control that
+    can't work */}
 <fieldset class="theme-toggle" hidden>
   <legend class="visually-hidden">Choose a colour theme</legend>
   <ul role="list">
@@ -113,7 +115,8 @@ const options = [
         }
       };
 
-      // Cross-fade between the old and new colours where possible; otherwise the theme switches instantly.
+      // Cross-fade between the old and new colours where possible; otherwise the theme switches
+      // instantly.
       withViewTransition(applyTheme);
     });
   }

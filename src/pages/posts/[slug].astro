@@ -3,10 +3,10 @@
 import { render } from 'astro:content';
 import PostsLayout from '../../layouts/PostsLayout.astro';
 
-// The same published-posts helper the listing and the feed use. Drafts get no page built at all,
-// so a draft can't be listed, syndicated, indexed or reached by guessing its URL — one rule
-// everywhere rather than three surfaces each remembering to filter. Under `npm run dev` the helper
-// includes drafts, so they can be previewed there.
+// The same published-posts helper the listing, the feed and the offline page use. Drafts get no
+// page built at all, so a draft can't be listed, syndicated, indexed or reached by guessing its
+// URL — one rule everywhere rather than each surface remembering to filter. Under `npm run dev`
+// the helper includes drafts, so they can be previewed there.
 import { getPublishedPosts } from '../../utils/posts';
 
 // `post.id` is already URL-ready: the glob loader strips the file extension and slugifies the

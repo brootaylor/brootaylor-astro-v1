@@ -1,4 +1,4 @@
-// The one entry point for the site's site-wide browser JavaScript. BaseLayout.astro loads this
+// The one entry point for the site-wide browser JavaScript. BaseLayout.astro loads this
 // file, so every page gets it as a single external script (main.<hash>.js). Modules in this
 // folder export functions and do nothing on import; this is the only place they're called.
 //

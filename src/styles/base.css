@@ -47,7 +47,8 @@
   }
 
   h1,
-  h2 {
+  h2,
+  h3 {
     line-height: var(--lh-heading);
     /* `balance` evens out line lengths in short blocks like headings. Same fallback story. */
     text-wrap: balance;
@@ -62,6 +63,12 @@
 
   h2 {
     font-size: var(--fluid-type-1);
+    font-weight: var(--fw-bold);
+  }
+
+  /* A subheading within an h2's section: body size, set apart by weight alone. */
+  h3 {
+    font-size: var(--fluid-type-0);
     font-weight: var(--fw-bold);
   }
 
@@ -94,6 +101,11 @@
     font-size: var(--fluid-type--2);
   }
 
+  /* A rule drawn as a filled line rather than the browser's bevelled border. The `margin-top`
+     only takes effect where the rule is a first child or outside a `.flow` container: inside
+     one, `.flow > * + *` (utilities, a later layer) sets the margin instead. Today that means
+     the 2rem spaces the footer's rule from the page above it, and the rules in a post get the
+     ordinary flow gap. */
   hr {
     border: 0;
     background-color: var(--color-hr);

@@ -21,9 +21,10 @@ import { fromLondonTime } from './date';
 const postsDir = new URL('../content/posts/', import.meta.url);
 
 // Slug -> last modified Date, built once when the config loads.
-const lastmods = new Map();
+const lastmods = new Map<string, Date>();
 
-for (const file of readdirSync(postsDir).filter((name) => /\.mdx?$/.test(name))) {
+// Markdown only, matching the glob loader's pattern in src/content.config.ts.
+for (const file of readdirSync(postsDir).filter((name) => /\.md$/.test(name))) {
   const source = readFileSync(new URL(file, postsDir), 'utf8');
   const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
   const read = (key: string) => frontmatter.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, 'm'))?.[1];
@@ -34,12 +35,12 @@ for (const file of readdirSync(postsDir).filter((name) => /\.mdx?$/.test(name)))
   const value = read('updated') ?? read('date') ?? '';
   const asYaml = /T[\d:.]+$/.test(value) ? `${value}Z` : value;
   const parsed = new Date(asYaml);
-  if (!Number.isNaN(parsed.valueOf())) lastmods.set(file.replace(/\.mdx?$/, ''), fromLondonTime(parsed));
+  if (!Number.isNaN(parsed.valueOf())) lastmods.set(file.replace(/\.md$/, ''), fromLondonTime(parsed));
 }
 
 export const addPostLastmod = (item: { url: string }) => {
   const slug = new URL(item.url).pathname.match(/^\/posts\/([^/]+)\/$/)?.[1];
-  const lastmod = lastmods.get(slug);
+  const lastmod = slug === undefined ? undefined : lastmods.get(slug);
 
   return lastmod ? { ...item, lastmod: lastmod.toISOString() } : item;
 };

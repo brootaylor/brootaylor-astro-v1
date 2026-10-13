@@ -5,9 +5,10 @@
    stack, weights, line heights, the type scale, the spacing scale, radii, borders and the
    focus ring. Other files reference these via `var(--…)` rather than hardcoding values, so
    changing any of them is a one-file edit. (A few fixed offsets, such as the `hr` margin,
-   are still written out where they're used: none matches a step on the fluid scale. And the
-   page cross-fade's `--transition-duration` lives in transitions.css, inside the reduced-motion
-   gate with the rules it times.)
+   are still written out where they're used: none matches a step on the fluid scale. The `hr`
+   one only reaches the footer's rule; see base.css. And the page cross-fade's
+   `--transition-duration` lives in transitions.css, inside the reduced-motion gate with the
+   rules it times.)
 
    Custom properties inherit and are resolved at use time, so they don't care which layer
    they're declared in relative to the rules that use them. The layer is just for tidiness.

@@ -23,8 +23,9 @@ const declarations = [...tokensCss.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/(-
 // the sample is the token, not a copy of its value.
 type Sample = 'colour' | 'font' | 'weight' | 'line-height' | 'type' | 'space' | 'radius' | 'border' | 'focus' | 'none';
 
-// Groups, in the order the page shows them. A token matches the first group whose prefix it starts
-// with, so the longer prefixes don't need to come first unless they share a start.
+// Groups, in the order the page shows them. A token goes in the first group whose prefix it starts
+// with. None of these prefixes begins another, so the order is free; if one ever did (say
+// `--color-` and `--color-text-`), the longer would have to come first.
 const groups: { prefix: string; heading: string; sample: Sample; note: string }[] = [
   { prefix: '--palette-', heading: 'Palette', sample: 'colour', note: 'Primitives. No stylesheet or component uses these: the semantic colours below pick from them.' },
   { prefix: '--color-', heading: 'Colours', sample: 'colour', note: 'Semantic. Each is a light and dark pair, so these swatches follow the theme toggle.' },

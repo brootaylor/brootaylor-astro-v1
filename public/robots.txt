@@ -1,4 +1,5 @@
-# Every crawler may index every page.
+# Every crawler may crawl every page. This file controls crawling, not indexing: the pages kept
+# out of search results say so themselves, with a `noindex` robots meta tag.
 # Full syntax: https://developers.google.com/crawling/docs/robots-txt/create-robots-txt
 User-agent: *
 Allow: /

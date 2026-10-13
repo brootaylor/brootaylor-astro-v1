@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Page transitions
+   Page transitions  (@layer transitions)
    ==========================================================================
    Native View Transitions: the browser snapshots the old page and the new one, then animates
    between the two. No router, no library, no JavaScript for page-to-page navigation.

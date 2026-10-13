@@ -46,7 +46,7 @@ title: "A post title"
 description: "Optional. Used for the meta description and social cards."
 date: 2026-10-07T16:00:00
 updated: 2026-10-09T09:30:00
-draft: true
+draft: false
 ---
 ```
 

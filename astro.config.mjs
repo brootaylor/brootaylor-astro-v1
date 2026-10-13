@@ -25,9 +25,9 @@ export default defineConfig({
             output: {
               // Astro names a script after the component that holds it, which gives
               // `ThemeToggle.astro_astro_type_script_index_0_lang.<hash>.js`. Keep just the
-              // component name: `ThemeToggle.<hash>.js`. A site-wide entry, if one is ever added
-              // as src/scripts/main.ts, is named `main` instead; matching on the file the chunk
-              // contains means it doesn't matter which component loads it.
+              // component name: `ThemeToggle.<hash>.js`. The site-wide entry, src/scripts/main.ts,
+              // is named `main` instead. BaseLayout loads it, but matching on the file the chunk
+              // contains means it doesn't matter which component does.
               entryFileNames(chunkInfo) {
                 if (chunkInfo.moduleIds.some((id) => id.endsWith('/src/scripts/main.ts'))) {
                   return '_astro/main.[hash].js';
